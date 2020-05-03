@@ -1,0 +1,6 @@
+EP0001-UPDWEBMOD_00-0000000000000000,6,webMAN_MOD_Installer,,,https://www.dropbox.com/s/f39pcwqhy4i3r0z/webMAN_MOD_Installer.pkg?dl=1,11767936,
+EP0001-MANAGUNZ0_00-0000000000000000,6,ManaGunZ,,,https://www.dropbox.com/s/b4mmzzrcpfhw87f/ManaGunZ.pkg?dl=1,15676240,
+EP0001-FILEMANAG_00-0000000000000000,6,FileManager,,,https://www.dropbox.com/s/74fm9bj7enfjlf2/FileManager.pkg?dl=1,10513424,
+UP0001-IRISMAN00_00-VER4860000000000,6,IRISMAN_4.86,,,https://www.dropbox.com/s/230ka2h6t18yiwk/IRISMAN_4.86.pkg?dl=1,22388016,
+UP0001-IRISMAN00_00-0000000000000000,6,IRISMAN_RUS,,,https://www.dropbox.com/s/zqgxbmod34jqq3a/IRISMAN_rus.pkg?dl=1,306256,
+EP9000-NPEA00374_00-SINGSTARPS3V0101,6,Multiman SingStar Replacement,,,https://www.dropbox.com/s/ibl9quh9dgbk8et/MmSs-R.pkg?dl=1,176800000,
