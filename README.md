@@ -26,12 +26,3 @@ The `pkgi-ps3` homebrew app allows to download and install `.pkg` files directly
 # License
 
 `pkgi-ps3` is released under the [MIT License](LICENSE).
-
-[PSDLE]: https://repod.github.io/psdle/
-[socat]: http://www.dest-unreach.org/socat/
-[pkgi_downloads]: https://github.com/bucanero/pkgi-ps3/releases
-[pkgi_latest]: https://github.com/bucanero/pkgi-ps3/releases/latest
-[pkgi_license]: https://github.com/bucanero/pkgi-ps3/blob/master/LICENSE
-[img_downloads]: https://img.shields.io/github/downloads/bucanero/pkgi-ps3/total.svg?maxAge=3600
-[img_latest]: https://img.shields.io/github/release/bucanero/pkgi-ps3.svg?maxAge=3600
-[img_license]: https://img.shields.io/github/license/bucanero/pkgi-ps3.svg?maxAge=2592000
