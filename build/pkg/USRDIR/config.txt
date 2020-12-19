@@ -1,0 +1,4 @@
+url https://raw.githubusercontent.com/nikolaevich23/pkgi/master/mylist.csv
+url_demos https://raw.githubusercontent.com/nikolaevich23/pkgi/master/otherlist.csv
+url_emulators https://raw.githubusercontent.com/nikolaevich23/pkgi/master/emulators.csv
+ 
