@@ -54,7 +54,7 @@ static const MenuEntry menu_entries[] =
     { MenuFilter, "USA", DbFilterRegionUSA },
 
     { MenuText, "Options:", 0 },
-    { MenuMode, "Back. DL", 1 },
+    { MenuMode, "BG Download", 1 },
     { MenuMusic, "Music", 1 },
     { MenuUpdate, "Updates", 1 },
 

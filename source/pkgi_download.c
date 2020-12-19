@@ -7,9 +7,9 @@
 
 #include <sys/stat.h>
 #include <sys/file.h>
-#include <lv2/sysfs.h>
+#include <stdio.h>
+#include <dirent.h>
 
-#define BUFF_SIZE  0x200000 // 2MB
 
 #define PDB_HDR_FILENAME	"\x00\x00\x00\xCB"
 #define PDB_HDR_DATETIME	"\x00\x00\x00\xCC"
@@ -33,7 +33,7 @@ static uint64_t initial_offset;  // where http download resumes
 static uint64_t download_offset; // pkg absolute offset
 static uint64_t download_size;   // pkg total size (from http request)
 
-static sha256_ctx sha;
+static sha256_context sha;
 
 static void* item_file;     // current file handle
 static char item_name[256]; // current file name
@@ -46,7 +46,6 @@ static uint8_t down[64 * 1024];
 // pkg header
 static uint64_t total_size;
 
-
 // UI stuff
 static char dialog_extra[256];
 static char dialog_eta[256];
@@ -55,19 +54,6 @@ static uint32_t info_update;
 
 static uint32_t	queue_task_id 	= 10000002;
 static uint32_t	install_task_id = 80000002;
-
-
-// Async IO stuff
-#define AIO_BUFFERS		4
-#define AIO_NUMBER		2
-#define AIO_FAILED 		0
-#define AIO_READY 		1
-#define AIO_BUSY  		2
-
-static sysFSAio aio_write[AIO_NUMBER];
-
-uint8_t write_status[AIO_NUMBER];
-uint8_t buffer_to_write;
 
 
 uint32_t get_task_dir_id(const char* dir, uint32_t tid)
@@ -103,29 +89,30 @@ static void write_pdb_string(void* fp, const char* header, const char* pdbstr)
 static int create_queue_pdb_files(void)
 {
 	// Create files	
-	char szPDBFile[256] = "";
-	char szIconFile[256] = "";
+	char srcFile[256];
+	char szIconFile[256];
 	
-	pkgi_snprintf(szPDBFile, sizeof(szPDBFile), PKGI_QUEUE_FOLDER "/%d/d0.pdb", queue_task_id);
+	pkgi_snprintf(srcFile, sizeof(srcFile), "%s/%.9s.PNG", pkgi_get_temp_folder(), root);
 	pkgi_snprintf(szIconFile, sizeof(szIconFile), PKGI_QUEUE_FOLDER "/%d/ICON_FILE", queue_task_id);
 	
 	// write - ICON_FILE
-	if (!pkgi_save(szIconFile, iconfile_data, iconfile_data_size))
+	if (rename(srcFile, szIconFile) != 0)
 	{
-	    LOG("Error saving %s", szIconFile);
-	    return 0;
-    }
+		LOG("Error saving %s", szIconFile);
+		return 0;
+	}
 	
-	void *fpPDB = pkgi_create(szPDBFile);
+	pkgi_snprintf(srcFile, sizeof(srcFile), PKGI_QUEUE_FOLDER "/%d/d0.pdb", queue_task_id);
+	void *fpPDB = pkgi_create(srcFile);
 	if(!fpPDB)
 	{
-	    LOG("Failed to create file %s", szPDBFile);
+		LOG("Failed to create file %s", srcFile);
 		return 0;
 	}
 
 	// write - d0.pdb
 	//
-    pkgi_write(fpPDB, pkg_d0top_data, d0top_data_size);
+	pkgi_write(fpPDB, pkg_d0top_data, d0top_data_size);
 	
 	// 000000CE - Download expected size (in bytes)
 	pkgi_write(fpPDB, PDB_HDR_SIZE "\x00\x00\x00\x08\x00\x00\x00\x08", 12);
@@ -144,7 +131,7 @@ static int create_queue_pdb_files(void)
 	write_pdb_string(fpPDB, PDB_HDR_ICON, szIconFile);
 
 	// 00000069 - Display title	
-	char title_str[256] = "";
+	char title_str[256];
 	pkgi_snprintf(title_str, sizeof(title_str), "\xE2\x98\x85 Download \x22%s\x22", db_item->name);
 	write_pdb_string(fpPDB, PDB_HDR_TITLE, title_str);
 	
@@ -289,107 +276,25 @@ static void update_progress(void)
     }
 }
 
-static void writing_callback(sysFSAio *xaio, s32 error, s32 xid, u64 size)
-{
-	int i = xaio->usrdata;
-	
-	if(error != 0) {
-		write_status[i] = AIO_FAILED;
-		LOG("Error : writing error %X", (unsigned int) error);
-	} else 
-	if(size != xaio->size) {
-		write_status[i] = AIO_FAILED;
-		LOG("Error : writing size %X / %X", (unsigned int) size, (unsigned int) xaio->size);
-	} else {
-		buffer_to_write++;
-		if (buffer_to_write == AIO_BUFFERS) buffer_to_write=0;
-		write_status[i] = AIO_READY;
-		download_offset+=size;
-	}
-}
-
 static int create_dummy_pkg(void)
 {
-    int fdw, i;
-	static int id_w[2] = {-1, -1};
-	
 	char dst[256];
 	pkgi_snprintf(dst, sizeof(dst), PKGI_QUEUE_FOLDER "/%d/%s", queue_task_id, root);
 
-    if(sysFsAioInit(dst)!= 0)  {
-		LOG("Error : AIO_FAILED to copy_async / sysFsAioInit(dst)");
-		return AIO_FAILED;
-	}
+	LOG("Creating empty file '%s'...", dst);
+	if (!pkgi_save(dst, "PKGi PS3 MOD", 8))
+		return 0;
 
-	if(sysFsOpen(dst, SYS_O_CREAT | SYS_O_TRUNC | SYS_O_WRONLY, &fdw, 0, 0) != 0) {
-		LOG("Error : AIO_FAILED to copy_async / sysFsOpen(src)");
-		return AIO_FAILED;
-	}
-
-	char *mem = (char *) pkgi_malloc(BUFF_SIZE);
-	if(mem == NULL) {
-		LOG("Error : AIO_FAILED to copy_async / malloc");
-		return AIO_FAILED;
-	}
-	
-	for(i=0; i < AIO_NUMBER; i++) {
-		aio_write[i].fd = -1;
-		write_status[i]=AIO_READY;
-	}
-
-	uint64_t writing_pos=0ULL;		
-	buffer_to_write=0;
 	download_offset=0;
-	
-    while(download_offset < download_size)
-    {
-    	i = !i;
-
-		if((write_status[i] == AIO_READY) && (writing_pos < download_size))
-		{
-			aio_write[i].fd = fdw;
-			aio_write[i].offset = writing_pos;
-			aio_write[i].buffer_addr = (u32) (u64) &mem[0];
-			aio_write[i].size = min64(BUFF_SIZE, download_size - writing_pos);
-			aio_write[i].usrdata = i;
-									
-			write_status[i] = AIO_BUSY;
-			writing_pos += aio_write[i].size;
-						
-			if(sysFsAioWrite(&aio_write[i], &id_w[i], writing_callback) != 0) {
-				LOG("Error : AIO_FAILED to copy_async / sysFsAioWrite");
-				goto error;
-			}
-		}
-			
-		if(write_status[i] == AIO_FAILED || pkgi_dialog_is_cancelled()) {
-			LOG("Error : AIO_FAILED to copy_async / write_status = AIO_FAILED !");
-			goto error;
-		}
-			
-		update_progress();
-    }
-	
-	for(i=0; i<AIO_NUMBER; i++) {
-		sysFsClose(aio_write[i].fd);
+	if (truncate(dst, download_size) != 0)
+	{
+		LOG("Error truncating (%s)", dst);
+		return 0;
 	}
-	sysFsAioFinish(dst);
-    pkgi_free(mem);
-	
+
+	LOG("(%s) %d bytes written", dst, download_size);
+	download_offset=download_size;
     return 1;
-
-error:
-	for(i=0; i<AIO_NUMBER; i++) {
-		sysFsAioCancel(id_w[i]);
-	}
-	for(i=0; i<AIO_NUMBER; i++) {
-		sysFsClose(aio_write[i].fd);
-	}
-
-	sysFsAioFinish(dst);
-    pkgi_free(mem);
-
-    return AIO_FAILED;
 }
 
 static int queue_pkg_task(void)
@@ -460,7 +365,7 @@ static int queue_pkg_task(void)
 
 static void download_start(void)
 {
-    LOG("resuming pkg download from %llu offset", download_offset);
+    LOG("Resuming pkg download from %llu offset", download_offset);
     download_resume = 0;
     info_update = pkgi_time_msec() + 1000;
     pkgi_dialog_set_progress_title("Downloading...");
@@ -479,7 +384,7 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
     if (!http)
     {
         initial_offset = download_offset;
-        LOG("requesting %s @ %llu", db_item->url, download_offset);
+        LOG("Requesting %s @ %llu", db_item->url, download_offset);
         http = pkgi_http_get(db_item->url, db_item->content, download_offset);
         if (!http)
         {
@@ -507,7 +412,7 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
             return 0;
         }
 
-        LOG("http response length = %lld, total pkg size = %llu", http_length, download_size);
+        LOG("HTTP response length = %lld, total pkg size = %llu", http_length, download_size);
         info_start = pkgi_time_msec();
         info_update = pkgi_time_msec() + 500;
     }
@@ -536,7 +441,7 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
         if (!pkgi_write(item_file, buffer, read))
         {
             char error[256];
-            pkgi_snprintf(error, sizeof(error), "failed to write to %s", item_path);
+            pkgi_snprintf(error, sizeof(error), "Failed to write to %s", item_path);
             pkgi_dialog_error(error);
             return -1;
         }
@@ -556,7 +461,7 @@ static int create_file(void)
     if (!pkgi_mkdirs(folder))
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "cannot create folder %s", folder);
+        pkgi_snprintf(error, sizeof(error), "Cannot create folder %s", folder);
         pkgi_dialog_error(error);
         return 0;
     }
@@ -566,7 +471,7 @@ static int create_file(void)
     if (!item_file)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "cannot create file %s", item_name);
+        pkgi_snprintf(error, sizeof(error), "Cannot create file %s", item_name);
         pkgi_dialog_error(error);
         return 0;
     }
@@ -581,7 +486,7 @@ static int resume_partial_file(void)
     if (!item_file)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "cannot resume file %s", item_name);
+        pkgi_snprintf(error, sizeof(error), "Cannot resume file %s", item_name);
         pkgi_dialog_error(error);
         return 0;
     }
@@ -591,7 +496,7 @@ static int resume_partial_file(void)
 
 static int download_pkg_file(void)
 {
-    LOG("downloading %s", root);
+    LOG("Downloading %s", root);
 
     int result = 0;
 
@@ -638,14 +543,14 @@ static int check_integrity(const uint8_t* digest)
 {
     if (!digest)
     {
-        LOG("no integrity provided, skipping check");
+        LOG("No integrity provided, skipping check");
         return 1;
     }
 
     uint8_t check[SHA256_DIGEST_SIZE];
     sha256_finish(&sha, check);
 
-    LOG("checking integrity of pkg");
+    LOG("Checking integrity of pkg");
     if (!pkgi_memequ(digest, check, SHA256_DIGEST_SIZE))
     {
         LOG("pkg integrity is wrong, removing %s & resume data", item_path);
@@ -663,7 +568,7 @@ static int check_integrity(const uint8_t* digest)
 
 static int create_rap(const char* contentid, const uint8_t* rap)
 {
-    LOG("creating %s.rap", contentid);
+    LOG("Creating %s.rap", contentid);
     pkgi_dialog_update_progress("Creating RAP file", NULL, NULL, 1.f);
 
     char path[256];
@@ -681,26 +586,72 @@ static int create_rap(const char* contentid, const uint8_t* rap)
     return 1;
 }
 
+static int create_rif(const char* contentid, const uint8_t* rap)
+{
+    DIR *d;
+    struct dirent *dir;
+    char path[256];
+    char *lic_path = NULL;
+
+    d = opendir("/dev_hdd0/home/");
+    while ((dir = readdir(d)) != NULL)
+    {
+        if (pkgi_strstr(dir->d_name, ".") == NULL && pkgi_strstr(dir->d_name, "..") == NULL)
+        {
+            pkgi_snprintf(path, sizeof(path)-1, "%s%s%s", "/dev_hdd0/home/", dir->d_name, "/exdata/act.dat");
+            if (pkgi_get_size(path) > 0)
+            {
+                pkgi_snprintf(path, sizeof(path)-1, "%s%s%s", "/dev_hdd0/home/", dir->d_name, "/exdata/");
+            	lic_path = path;
+            	LOG("using folder '%s'", lic_path);
+                break;
+            }
+        }
+    }
+    closedir(d);
+
+    if (!lic_path)
+    {
+    	LOG("Skipping %s.rif: no act.dat file found", contentid);
+    	return 1;
+    }
+
+    LOG("creating %s.rif", contentid);
+    pkgi_dialog_update_progress("Creating RIF file", NULL, NULL, 1.f);
+
+    if (!rap2rif(rap, contentid, lic_path))
+    {
+        char error[256];
+        pkgi_snprintf(error, sizeof(error), "Cannot save %s.rif", contentid);
+        pkgi_dialog_error(error);
+        return 0;
+    }
+
+    LOG("RIF file created");
+    return 1;
+}
+
 int pkgi_download(const DbItem* item, const int background_dl)
 {
     int result = 0;
 
     pkgi_snprintf(root, sizeof(root), "%.9s.pkg", item->content + 7);
-    LOG("package installation file: %s", root);
+    LOG("Package installation file: %s", root);
 
     pkgi_snprintf(resume_file, sizeof(resume_file), "%s/%.9s.resume", pkgi_get_temp_folder(), item->content + 7);
     if (pkgi_load(resume_file, &sha, sizeof(sha)) == sizeof(sha))
     {
-        LOG("resume file exists, trying to resume");
+        LOG("Resume file exists, trying to resume");
         pkgi_dialog_set_progress_title("Resuming...");
         download_resume = 1;
     }
     else
     {
-        LOG("cannot load resume file, starting download from scratch");
+        LOG("Cannot load resume file, starting download from scratch");
         pkgi_dialog_set_progress_title(background_dl ? "Adding background task..." : "Downloading...");
         download_resume = 0;
         sha256_init(&sha);
+        sha256_starts(&sha, 0);
     }
 
     http = NULL;
@@ -714,19 +665,23 @@ int pkgi_download(const DbItem* item, const int background_dl)
     info_start = pkgi_time_msec();
     info_update = info_start + 1000;
 
-	if (background_dl)
-	{
-    	if (!queue_pkg_task()) goto finish;
-	}
-	else
-	{
-	    if (!download_pkg_file()) goto finish;
-	    if (!check_integrity(item->digest)) goto finish;
-	}
-
     if (item->rap)
     {
         if (!create_rap(item->content, item->rap)) goto finish;
+        if (!create_rif(item->content, item->rap)) goto finish;
+    }
+
+    pkgi_dialog_update_progress("Downloading icon", NULL, NULL, 1.f);
+    if (!pkgi_download_icon(item->content)) goto finish;
+
+    if (background_dl)
+    {
+        if (!queue_pkg_task()) goto finish;
+    }
+    else
+    {
+        if (!download_pkg_file()) goto finish;
+        if (!check_integrity(item->digest)) goto finish;
     }
 
     pkgi_rm(resume_file);
@@ -761,8 +716,9 @@ int pkgi_install(const char *titleid)
 	LOG("Creating .pdb files [%s]", titleid);
 
 	// write - ICON_FILE
-    pkgi_snprintf(filename, sizeof(filename), PKGI_INSTALL_FOLDER "/%d/ICON_FILE", install_task_id);
-	if (!pkgi_save(filename, iconfile_data, iconfile_data_size))
+	pkgi_snprintf(filename, sizeof(filename), "%s/ICON_FILE", pkg_path);
+	pkgi_snprintf(resume_file, sizeof(resume_file), "%s/%s.PNG", pkgi_get_temp_folder(), titleid);
+	if (rename(resume_file, filename) != 0)
 	{
 	    LOG("Error saving %s", filename);
 	    return 0;
@@ -777,7 +733,71 @@ int pkgi_install(const char *titleid)
     
     LOG("move (%s) -> (%s)", pkg_path, filename);
     
-    int ret = sysLv2FsRename(pkg_path, filename);
+	return (rename(pkg_path, filename) == 0);
+}
 
-	return (ret == 0);
+int pkgi_download_icon(const char* content)
+{
+    char icon_url[256];
+    char icon_file[256];
+    uint8_t hmac[20];
+
+    pkgi_snprintf(icon_file, sizeof(icon_file), PKGI_TMP_FOLDER "/%.9s.PNG", content + 7);
+    LOG("package icon file: %s", icon_file);
+
+    if (pkgi_get_size(icon_file) > 0)
+        return 1;
+
+    pkgi_snprintf(icon_url, sizeof(icon_url), "%.9s_00", content + 7);
+    sha1_hmac(tmdb_hmac_key, sizeof(tmdb_hmac_key), (uint8_t*) icon_url, 12, hmac);
+
+    pkgi_snprintf(icon_url, sizeof(icon_url), "http://tmdb.np.dl.playstation.net/tmdb/%.9s_00_%llX%llX%X/ICON0.PNG", 
+        content + 7,
+        ((uint64_t*)hmac)[0], 
+        ((uint64_t*)hmac)[1], 
+        ((uint32_t*)hmac)[4]);
+
+    pkgi_http* http = pkgi_http_get(icon_url, NULL, 0);
+    if (!http)
+    {
+        LOG("HTTP request to %s failed", icon_url);
+        return pkgi_save(icon_file, iconfile_data, iconfile_data_size);
+    }
+
+    int64_t sz;
+    if (!pkgi_http_response_length(http, &sz))
+    {
+        LOG("Icon not found, using default");
+        pkgi_http_close(http);
+        return pkgi_save(icon_file, iconfile_data, iconfile_data_size);
+    }
+
+    uint32_t size = 0;
+    void* f = pkgi_create(icon_file);
+
+    while (size < sz)
+    {
+        int read = pkgi_http_read(http, down, sizeof(down));
+        if (read < 0)
+        {
+            size = 0;
+            break;
+        }
+        else if (read == 0)
+        {
+            break;
+        }
+        pkgi_write(f, down, read);
+        size += read;
+    }
+
+    if (size != 0)
+    {
+        LOG("Received %u bytes", size);
+    }
+
+    pkgi_close(f);
+    pkgi_http_close(http);
+
+    return 1;
 }

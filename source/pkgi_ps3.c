@@ -10,6 +10,7 @@
 #include <http/https.h>
 #include <io/pad.h>
 #include <lv2/sysfs.h>
+#include <lv2/process.h>
 #include <net/net.h>
 
 #include <unistd.h>
@@ -196,7 +197,9 @@ static void pkgi_start_debug_log(void)
 {
 #ifdef PKGI_ENABLE_LOGGING
     dbglogger_init();
-    LOG("PKGi PS3 logging initialized");
+    LOG("PKGi PS3 MOD logging initialized");
+
+    dbglogger_failsafe("9999");
 #endif
 }
 
@@ -618,7 +621,7 @@ void load_ttf_fonts()
 	LOG("loading TTF fonts");
 	
 	TTFUnloadFont();
-	TTFLoadFont(0, "/dev_flash/data/font/SCE-PS3-SR-R-LATIN2.TTF", NULL, 0);
+	TTFLoadFont(0, "/dev_hdd0/game/NP00PKGI3/USRDIR/M-RUS.TTF", NULL, 0);
 	TTFLoadFont(1, "/dev_flash/data/font/SCE-PS3-DH-R-CGB.TTF", NULL, 0);
 	TTFLoadFont(2, "/dev_flash/data/font/SCE-PS3-SR-R-JPN.TTF", NULL, 0);
 	TTFLoadFont(3, "/dev_flash/data/font/SCE-PS3-YG-R-KOR.TTF", NULL, 0);
@@ -629,7 +632,7 @@ void load_ttf_fonts()
 void init_http_pool(void)
 {
     int ret;
-	s32 cert_size=0;
+	u32 cert_size=0;
 
     LOG("initializing HTTP");
     http_pools.http_pool = malloc(0x10000);
@@ -666,8 +669,8 @@ void init_http_pool(void)
 
     http_pools.caList = (httpsData *)malloc(sizeof(httpsData));
     if (http_pools.caList) {
-    	(&http_pools.caList[0])->ptr = http_pools.cert_buffer;
-	    (&http_pools.caList[0])->size = cert_size;
+    	http_pools.caList->ptr = http_pools.cert_buffer;
+	    http_pools.caList->size = cert_size;
 	}
 
 	ret = httpsInit(1, (httpsData *) http_pools.caList);
@@ -677,6 +680,23 @@ void init_http_pool(void)
     return;
 }
 
+static void sys_callback(uint64_t status, uint64_t param, void* userdata)
+{
+    switch (status) {
+        case SYSUTIL_EXIT_GAME:
+            pkgi_end();
+            sysProcessExit(1);
+            break;
+        
+        case SYSUTIL_MENU_OPEN:
+        case SYSUTIL_MENU_CLOSE:
+            break;
+
+        default:
+            break;
+    }
+}
+
 void pkgi_start(void)
 {
     pkgi_start_debug_log();
@@ -684,7 +704,7 @@ void pkgi_start(void)
     netInitialize();
 
     LOG("initializing SSL");
-//    sysModuleLoad(SYSMODULE_NET);
+    sysModuleLoad(SYSMODULE_NET);
     sysModuleLoad(SYSMODULE_HTTP);
     sysModuleLoad(SYSMODULE_HTTPS);
     sysModuleLoad(SYSMODULE_SSL);
@@ -694,7 +714,7 @@ void pkgi_start(void)
     sys_mutex_attr_t mutex_attr;
     mutex_attr.attr_protocol = SYS_MUTEX_PROTOCOL_FIFO;
     mutex_attr.attr_recursive = SYS_MUTEX_ATTR_NOT_RECURSIVE;
-    mutex_attr.attr_pshared = SYS_MUTEX_ATTR_PSHARED;
+    mutex_attr.attr_pshared = SYS_MUTEX_ATTR_NOT_PSHARED;
     mutex_attr.attr_adaptive = SYS_MUTEX_ATTR_ADAPTIVE;
     strcpy(mutex_attr.name, "dialog");
 
@@ -703,8 +723,8 @@ void pkgi_start(void)
         LOG("mutex create error (%x)", ret);
     }
 
-//    if (config.enterButtonAssign == SCE_SYSTEM_PARAM_ENTER_BUTTON_CIRCLE)
-    if (false)
+    sysUtilGetSystemParamInt(SYSUTIL_SYSTEMPARAM_ID_ENTER_BUTTON_ASSIGN, &ret);
+    if (ret == 0)
     {
         g_ok_button = PKGI_BUTTON_O;
         g_cancel_button = PKGI_BUTTON_X;
@@ -737,6 +757,9 @@ void pkgi_start(void)
 
     init_music();
 
+    // register exit callback
+    sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, sys_callback, NULL);
+
     g_time = pkgi_time_msec();
 }
 
@@ -745,30 +768,20 @@ int pkgi_update(pkgi_input* input)
 	ya2d_controlsRead();
     
     uint32_t previous = input->down;
-    input->down = 0;
+    memcpy(&input->down, &ya2d_paddata[0].button[2], sizeof(uint32_t));
 
-    if (ya2d_paddata[0].BTN_CROSS)      input->down |= PKGI_BUTTON_X;
-    if (ya2d_paddata[0].BTN_TRIANGLE)   input->down |= PKGI_BUTTON_T;
-    if (ya2d_paddata[0].BTN_CIRCLE)     input->down |= PKGI_BUTTON_O;
-    if (ya2d_paddata[0].BTN_SQUARE)     input->down |= PKGI_BUTTON_S;
-    if (ya2d_paddata[0].BTN_SELECT)     input->down |= PKGI_BUTTON_SELECT;
-    if (ya2d_paddata[0].BTN_START)      input->down |= PKGI_BUTTON_START;
- 
-    if (ya2d_paddata[0].BTN_UP || (ya2d_paddata[0].ANA_L_V < ANALOG_MIN))
+    if (ya2d_paddata[0].ANA_L_V < ANALOG_MIN)
         input->down |= PKGI_BUTTON_UP;
         
-    if (ya2d_paddata[0].BTN_DOWN || (ya2d_paddata[0].ANA_L_V > ANALOG_MAX))
+    if (ya2d_paddata[0].ANA_L_V > ANALOG_MAX)
         input->down |= PKGI_BUTTON_DOWN;
         
-    if (ya2d_paddata[0].BTN_LEFT || (ya2d_paddata[0].ANA_L_H < ANALOG_MIN))
+    if (ya2d_paddata[0].ANA_L_H < ANALOG_MIN)
         input->down |= PKGI_BUTTON_LEFT;
         
-    if (ya2d_paddata[0].BTN_RIGHT || (ya2d_paddata[0].ANA_L_H > ANALOG_MAX))
+    if (ya2d_paddata[0].ANA_L_H > ANALOG_MAX)
         input->down |= PKGI_BUTTON_RIGHT;
 
-    if (ya2d_paddata[0].BTN_L1 || ya2d_paddata[0].BTN_L2)      input->down |= PKGI_BUTTON_LT;
-    if (ya2d_paddata[0].BTN_R1 || ya2d_paddata[0].BTN_R2)      input->down |= PKGI_BUTTON_RT;
- 
     input->pressed = input->down & ~previous;
     input->active = input->pressed;
 
@@ -836,7 +849,7 @@ void pkgi_end(void)
     sysModuleUnload(SYSMODULE_HTTPS);
     sysModuleUnload(SYSMODULE_HTTP);
 
-//    sceKernelExitProcess(0);
+    sysProcessExit(0);
 }
 
 int pkgi_get_temperature(uint8_t cpu)
@@ -1018,7 +1031,7 @@ void pkgi_unlock_process(void)
 
 pkgi_texture pkgi_load_jpg_raw(const void* data, uint32_t size)
 {
-	ya2d_Texture *tex = ya2d_loadJPGfromBuffer((void *)data, size);
+    ya2d_Texture *tex = ya2d_loadJPGfromBuffer(data, size);
 
     if (!tex)
     {
@@ -1029,11 +1042,22 @@ pkgi_texture pkgi_load_jpg_raw(const void* data, uint32_t size)
 
 pkgi_texture pkgi_load_png_raw(const void* data, uint32_t size)
 {
-	ya2d_Texture *tex = ya2d_loadPNGfromBuffer((void *)data, size);
+    ya2d_Texture *tex = ya2d_loadPNGfromBuffer(data, size);
 
     if (!tex)
     {
         LOG("failed to load texture");
+    }
+    return tex;
+}
+
+pkgi_texture pkgi_load_png_file(const char* filename)
+{
+    ya2d_Texture *tex = ya2d_loadPNGfromFile(filename);
+
+    if (!tex)
+    {
+        LOG("failed to load texture file %s", filename);
     }
     return tex;
 }
@@ -1208,12 +1232,12 @@ pkgi_http* pkgi_http_get(const char* url, const char* content, uint64_t offset)
 
     if (content)
     {
-        pkgi_snprintf(path, sizeof(path), "%s%s.pkg", pkgi_get_temp_folder(), strrchr(url, '/'));
+        pkgi_snprintf(path, sizeof(path), "%s%s", pkgi_get_temp_folder(), strrchr(url, '/'));
 
         int64_t fsize = pkgi_get_size(path);
         if (fsize < 0)
         {
-            LOG("trying shorter name (%s)", content);
+            LOG("trying shorter name (%s.pkg)", content);
             pkgi_snprintf(path, sizeof(path), "%s/%s.pkg", pkgi_get_temp_folder(), content);
             fsize = pkgi_get_size(path);
         }
@@ -1245,7 +1269,7 @@ pkgi_http* pkgi_http_get(const char* url, const char* content, uint64_t offset)
     httpUri uri;
     int ret;
     void *uri_p = NULL;
-    s32 pool_size = 0;
+    u32 pool_size = 0;
 
     LOG("starting http GET request for %s", url);
 
@@ -1307,23 +1331,6 @@ pkgi_http* pkgi_http_get(const char* url, const char* content, uint64_t offset)
         LOG("httpSendRequest failed: 0x%08x", ret);
         goto bail;
     }
-
-/*
-        int code;
-        
-        ret = httpResponseGetStatusCode(transID, &code);
-        if (ret < 0) goto bail;
-        
-        if (code == HTTP_STATUS_CODE_Not_Found || code == HTTP_STATUS_CODE_Forbidden) {ret=-4; goto bail;}
-*/
-
-/*
-        if ((err = sceHttpSendRequest(req, NULL, 0)) < 0)
-        {
-            LOG("sceHttpSendRequest failed: 0x%08x", err);
-            goto bail;
-        }
-*/
 
     http->used = 1;
     http->local = 0;
@@ -1392,7 +1399,7 @@ int pkgi_http_read(pkgi_http* http, void* buffer, uint32_t size)
     else
     {
         // LOG("http asking to read %u bytes", size);
-        s32 recv;
+        u32 recv;
         int res = httpRecvResponse(http->transaction, buffer, size, &recv);
 
 //        LOG("http read (%d) %d bytes", size, recv);
