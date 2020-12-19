@@ -252,10 +252,10 @@ static void pkgi_do_main(pkgi_input* input)
         if (input->active & PKGI_BUTTON_SELECT) {
             input->pressed &= ~PKGI_BUTTON_SELECT;
 
-            pkgi_msg_dialog(MDIALOG_OK, "           \xE2\x98\x85  PKGi PS3 MOD v" PKGI_VERSION "  \xE2\x98\x85         \n\n"
+            pkgi_msg_dialog(MDIALOG_OK, "            \xE2\x98\x85  PKGi PS3 MOD v" PKGI_VERSION "  \xE2\x98\x85         \n\n"
                               "  Оригинальная PS Vita версия by mmozeiko    \n\n"
-                              "    PlayStation 3 версия by Bucanero     \n\n"
-                              "  \xEF\x90\x85  PSN база данных by PSPx Team  \xEF\x90\x85   ");
+                              "       PlayStation 3 версия by Bucanero     \n\n"
+                              "   \xEF\x90\x85  PSN база данных by PSPx Team  \xEF\x90\x85   ");
         }
 
         if (input->active & PKGI_BUTTON_L2)
