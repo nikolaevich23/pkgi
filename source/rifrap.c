@@ -184,11 +184,11 @@ int rap2rif(const uint8_t* rap, const char* content_id, const char *exdata_path)
 
     actdat = actdat_get(exdata_path);
 	if (actdat == NULL) {
-		LOG("Error: unable to load act.dat");
+		LOG("Ошибка: не удалось загрузить act.dat");
 		goto fail;
 	}
 
-	LOG("Reading IDPS ...");
+	LOG("Чтение IDPS ...");
 	ss_aim_get_device_id(idps);
 
 	memset(&rif, 0, sizeof(struct rif));
@@ -220,9 +220,9 @@ int rap2rif(const uint8_t* rap, const char* content_id, const char *exdata_path)
 
     snprintf(path, sizeof(path), "%s%s.rif", exdata_path, content_id);
 
-	LOG("Saving rif to '%s'...", path);
+	LOG("Сохранение RIF в '%s'...", path);
 	if (pkgi_save(path, (uint8_t*) &rif, sizeof(struct rif)) < 0) {
-		LOG("Error: unable to create rif file");
+		LOG("Ошибка: не удалось создать RIF-файл");
 		goto fail;
 	}
 

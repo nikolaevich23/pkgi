@@ -34,32 +34,29 @@ typedef enum {
     DbFilterMissing   = 0x20,
 
     DbFilterContentGame     = 0x000100,
-    DbFilterContentDLC      = 0x000200,
-    DbFilterContentTheme    = 0x000400,
-    DbFilterContentAvatar   = 0x000800,
-    DbFilterContentDemo     = 0x001000,
-    DbFilterContentManager  = 0x002000,
-    DbFilterContentEmulator = 0x004000,
+    DbFilterContentRUS	    = 0x000200,
+    DbFilterContentDLC      = 0x000400,
+    DbFilterContentTheme    = 0x000800,
+    DbFilterContentAvatar   = 0x001000,
+    DbFilterContentDemo     = 0x002000,
+    DbFilterContentManager  = 0x004000,
     DbFilterContentApp      = 0x008000,
-    DbFilterContentTool     = 0x010000,
 
     DbFilterAllRegions = DbFilterRegionUSA | DbFilterRegionEUR | DbFilterRegionJPN | DbFilterRegionASA,
-    DbFilterAllContent = DbFilterContentGame | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | 
-                         DbFilterContentDemo | DbFilterContentManager | DbFilterContentEmulator | DbFilterContentApp | DbFilterContentTool,
+    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp,
     DbFilterAll = DbFilterAllRegions | DbFilterAllContent | DbFilterInstalled | DbFilterMissing,
 } DbFilter;
 
 typedef enum {
     ContentUnknown,
     ContentGame,
+    ContentRUS,
     ContentDLC,
     ContentTheme,
     ContentAvatar,
     ContentDemo,
     ContentManager,
-    ContentEmulator,
-    ContentApp,
-    ContentTool
+    ContentApp
 } ContentType;
 
 typedef struct {

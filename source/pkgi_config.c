@@ -199,7 +199,7 @@ void pkgi_load_config(Config* config, char* refresh_url, uint32_t refresh_len)
     }
     else
     {
-        LOG("config.txt cannot be loaded, using default values");
+        LOG("config.txt не может быть загружен со значени€ми по умолчанию");
     }
     if (config->content == 0)
     {
@@ -216,14 +216,13 @@ const char* pkgi_content_tag(ContentType content)
     switch (content)
     {
     case ContentGame: return "_games";
+    case ContentRUS: return "_russian";
     case ContentDLC: return "_dlcs";
     case ContentTheme: return "_themes";
     case ContentAvatar: return "_avatars";
     case ContentDemo: return "_demos";
     case ContentManager: return "_managers";
-    case ContentEmulator: return "_emulators";
     case ContentApp: return "_apps";
-    case ContentTool: return "_tools";
     default: return "";
     }
 }
@@ -310,10 +309,10 @@ void pkgi_save_config(const Config* config, const char* update_url, uint32_t upd
 
     if (pkgi_save(path, data, len))
     {
-        LOG("saved config.txt");
+        LOG("config.txt сохранЄн");
     }
     else
     {
-        LOG("cannot save config.txt");
+        LOG("Ќе удалось сохранить config.txt");
     }
 }

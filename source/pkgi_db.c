@@ -134,12 +134,12 @@ int update_database(const char* update_url, const char* path, char* error, uint3
 {
     db_total = 0;
     db_size = 0;
-    LOG("downloading update from %s", update_url);
+    LOG("Загрузка обновления из %s", update_url);
 
     pkgi_http* http = pkgi_http_get(update_url, NULL, 0);
     if (!http)
     {
-        pkgi_snprintf(error, error_size, "failed to download list from\n%s", update_url);
+        pkgi_snprintf(error, error_size, "Не удалось загрузить список из\n%s", update_url);
         return 0;
     }
     else
@@ -147,13 +147,13 @@ int update_database(const char* update_url, const char* path, char* error, uint3
         int64_t length;
         if (!pkgi_http_response_length(http, &length))
         {
-            pkgi_snprintf(error, error_size, "failed to download list from\n%s", update_url);
+            pkgi_snprintf(error, error_size, "Не удалось загрузить список из\n%s", update_url);
         }
         else
         {
             if (length > (int64_t)sizeof(db_data) - 1)
             {
-                pkgi_snprintf(error, error_size, "list is too large... check for newer pkgi version!");
+                pkgi_snprintf(error, error_size, "Список слишком велик... проверьте наличие более новой версии PKGi!");
             }
             else if (length != 0)
             {
@@ -172,7 +172,7 @@ int update_database(const char* update_url, const char* path, char* error, uint3
                 }
                 else if (read < 0)
                 {
-                    pkgi_snprintf(error, error_size, "HTTP error 0x%08x", read);
+                    pkgi_snprintf(error, error_size, "Ошибка HTTP 0x%08x", read);
                     db_size = 0;
                     break;
                 }
@@ -181,7 +181,7 @@ int update_database(const char* update_url, const char* path, char* error, uint3
 
             if (error[0] == 0 && db_size == 0)
             {
-                pkgi_snprintf(error, error_size, "list is empty... check the DB server");
+                pkgi_snprintf(error, error_size, "Список пуст ... проверьте сервер БД");
             }
         }
 
@@ -214,7 +214,7 @@ int load_database(uint8_t db_id)
         column = 0;
         ColumnType types[MAX_DB_COLUMNS];
 
-        LOG("loading format from %s", path);
+        LOG("Загрузка формата из %s", path);
 
         dbf.delimiter = *ptr++;
 
@@ -253,7 +253,7 @@ int load_database(uint8_t db_id)
 
     pkgi_snprintf(path, sizeof(path), "%s/pkgi%s.txt", pkgi_get_config_folder(), pkgi_content_tag(db_id));
 
-    LOG("loading database from %s", path);
+    LOG("Загрузка базы данных из %s", path);
     
     loaded = pkgi_load(path, db_data+db_size, sizeof(db_data) - 1);
     if (loaded > 0)
@@ -274,7 +274,7 @@ int load_database(uint8_t db_id)
         return 0;
     }
 
-    LOG("parsing items (%d bytes)", loaded);
+    LOG("Анализ элементов (%d байт)", loaded);
 
     db_size += loaded;
     db_data[db_size] = '\n';
@@ -306,7 +306,7 @@ int load_database(uint8_t db_id)
         if (column == dbf.total_columns && pkgi_validate_url(dbf.data[ColumnUrl].data))
         {
             uint32_t ctype = (uint32_t)pkgi_strtoll(dbf.data[ColumnContentType].data);
-            // contentid can't be empty, let's generate one
+            // contentid не может быть пустым, давайте создадим его
             db[db_count].content = (dbf.data[ColumnContentId].data[0] == 0 ? generate_contentid() : dbf.data[ColumnContentId].data);
             db[db_count].type = pkgi_get_content_type(ctype == 0 ? db_id : ctype);
             db[db_count].name = dbf.data[ColumnName].data;
@@ -334,7 +334,7 @@ int load_database(uint8_t db_id)
         }
     }
 
-    LOG("finished parsing, %u total items", (db_count - db_item_count));
+    LOG("Анализ завершён, всего пунктов: %u", (db_count - db_item_count));
 
     db_item_count = db_count;
 
@@ -380,11 +380,11 @@ int pkgi_db_reload(char* error, uint32_t error_size)
         }
     }
 
-    LOG("finished db update, %u total items", db_count);
+    LOG("Завершено обновление базы данных, всего пунктов: %u", db_count);
 
     if (db_count == 0)
     {
-        pkgi_snprintf(error, error_size, "ERROR: pkgi.txt file(s) missing or bad config.txt file");
+        pkgi_snprintf(error, error_size, "ОШИБКА: pkgi.txt файл(ы) отсутствует или неверный файл config.txt");
         return 0;
     }
     return 1;
@@ -406,14 +406,13 @@ static int matches(GameRegion region, ContentType content, uint32_t filter)
         || (region == RegionUnknown))
 
         && ((content == ContentGame && (filter & DbFilterContentGame))
+        || (content == ContentRUS && (filter & DbFilterContentRUS))
         || (content == ContentDLC && (filter & DbFilterContentDLC))
         || (content == ContentTheme && (filter & DbFilterContentTheme))
         || (content == ContentAvatar && (filter & DbFilterContentAvatar))
         || (content == ContentDemo && (filter & DbFilterContentDemo))
         || (content == ContentManager && (filter & DbFilterContentManager))
-        || (content == ContentEmulator && (filter & DbFilterContentEmulator))
         || (content == ContentApp && (filter & DbFilterContentApp))
-        || (content == ContentTool && (filter & DbFilterContentTool))
         || (content == ContentUnknown));
 }
 
@@ -531,7 +530,7 @@ void pkgi_db_configure(const char* search, const Config* config)
         uint32_t high = search_count - 1;
         while (low <= high)
         {
-            // this never overflows because of MAX_DB_ITEMS
+            // это никогда не переполняется из-за MAX_DB_ITEMS
             uint32_t middle = (low + high) / 2;
 
             GameRegion region = pkgi_get_region(db_item[middle]->content);

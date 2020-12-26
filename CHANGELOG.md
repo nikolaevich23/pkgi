@@ -4,6 +4,12 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ## [Unreleased]()
 
+## [v1.1.8.1](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.1) - 2020-12-26
+
+### Changed
+
+* Starting Russian version
+
 ## [v1.1.8](https://github.com/bucanero/pkgi-ps3/releases/tag/v1.1.8) - 2020-12-08
 
 ### Added

@@ -4,6 +4,7 @@
 #include "pkgi_utils.h"
 #include "pkgi_sha256.h"
 #include "pdb_data.h"
+#include "pkgi_utf8.h"
 
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -66,7 +67,7 @@ uint32_t get_task_dir_id(const char* dir, uint32_t tid)
 	    pkgi_snprintf(path, sizeof(path), "%s/%d", dir, tid);
 
         if ((stat(path, &sb) == 0) && S_ISDIR(sb.st_mode)) {
-	    	// there is already a directory with the ID, try again...
+	    	// каталог с идентификатором уже существует, попробуйте еще раз...
 		    tid++;
 		} else {
 		    found = 1;
@@ -88,17 +89,17 @@ static void write_pdb_string(void* fp, const char* header, const char* pdbstr)
 
 static int create_queue_pdb_files(void)
 {
-	// Create files	
+	// Создание файлов
 	char srcFile[256];
 	char szIconFile[256];
 	
 	pkgi_snprintf(srcFile, sizeof(srcFile), "%s/%.9s.PNG", pkgi_get_temp_folder(), root);
 	pkgi_snprintf(szIconFile, sizeof(szIconFile), PKGI_QUEUE_FOLDER "/%d/ICON_FILE", queue_task_id);
 	
-	// write - ICON_FILE
+	// запись - ICON_FILE
 	if (rename(srcFile, szIconFile) != 0)
 	{
-		LOG("Error saving %s", szIconFile);
+		LOG("Ошибка при сохранении %s", szIconFile);
 		return 0;
 	}
 	
@@ -106,33 +107,33 @@ static int create_queue_pdb_files(void)
 	void *fpPDB = pkgi_create(srcFile);
 	if(!fpPDB)
 	{
-		LOG("Failed to create file %s", srcFile);
+		LOG("Не удалось создать файл %s", srcFile);
 		return 0;
 	}
 
-	// write - d0.pdb
+	// запись - d0.pdb
 	//
 	pkgi_write(fpPDB, pkg_d0top_data, d0top_data_size);
 	
-	// 000000CE - Download expected size (in bytes)
+	// 000000CE - Ожидаемый размер загрузки (в байтах)
 	pkgi_write(fpPDB, PDB_HDR_SIZE "\x00\x00\x00\x08\x00\x00\x00\x08", 12);
 	pkgi_write(fpPDB, (char*) &total_size, 8);
 
-	// 000000CB - PKG file name
+	// 000000CB - Имя файла PKG
 	write_pdb_string(fpPDB, PDB_HDR_FILENAME, root);
 
-	// 000000CC - date/time
+	// 000000CC - дата/время
 	write_pdb_string(fpPDB, PDB_HDR_DATETIME, "Mon, 11 Dec 2017 11:45:10 GMT");
 
-	// 000000CA - PKG Link download URL
+	// 000000CA - URL для загрузки ссылки PKG
 	write_pdb_string(fpPDB, PDB_HDR_URL, db_item->url);
 
-	// 0000006A - Icon location / path (PNG w/o extension) 
+	// 0000006A - Расположение / путь значка (PNG без расширения)
 	write_pdb_string(fpPDB, PDB_HDR_ICON, szIconFile);
 
-	// 00000069 - Display title	
+	// 00000069 - Показать заголовок
 	char title_str[256];
-	pkgi_snprintf(title_str, sizeof(title_str), "\xE2\x98\x85 Download \x22%s\x22", db_item->name);
+	pkgi_snprintf(title_str, sizeof(title_str), "\xE2\x98\x85 " MDLTASK " \x22%s\x22", db_item->name);
 	write_pdb_string(fpPDB, PDB_HDR_TITLE, title_str);
 	
 	// 000000D9 - Content id 
@@ -157,41 +158,41 @@ int create_install_pdb_files(const char *path, uint64_t size)
     fp2 = pkgi_create(temp_buffer);
 
     if(!fp1 || !fp2) {
-	    LOG("Failed to create file %s", temp_buffer);
+	    LOG("Не удалось создать файл %s", temp_buffer);
 	    return 0;
     }
     
 	pkgi_write(fp1, install_data_pdb, install_data_pdb_size);
 	pkgi_write(fp2, install_data_pdb, install_data_pdb_size);
 
-	// 000000D0 - Downloaded size (in bytes)
+	// 000000D0 - Загруженный размер (в байтах)
 	pkgi_write(fp1, PDB_HDR_DLSIZE "\x00\x00\x00\x08\x00\x00\x00\x08", 12);
 	pkgi_write(fp1, (char*) &size, 8);
 
 	pkgi_write(fp2, PDB_HDR_DLSIZE "\x00\x00\x00\x08\x00\x00\x00\x08", 12);
 	pkgi_write(fp2, (char*) &size, 8);
 
-	// 000000CE - Package expected size (in bytes)
+	// 000000CE - Ожидаемый размер пакета (в байтах)
 	pkgi_write(fp1, PDB_HDR_SIZE "\x00\x00\x00\x08\x00\x00\x00\x08", 12);
 	pkgi_write(fp1, (char*) &size, 8);
 
 	pkgi_write(fp2, PDB_HDR_SIZE "\x00\x00\x00\x08\x00\x00\x00\x08", 12);
 	pkgi_write(fp2, (char*) &size, 8);
 
-	// 00000069 - Display title	
-    pkgi_snprintf(temp_buffer, sizeof(temp_buffer), "\xE2\x98\x85 Install \x22%s\x22", db_item->name);
+	// 00000069 - Показать заголовок	
+    pkgi_snprintf(temp_buffer, sizeof(temp_buffer), "\xE2\x98\x85 " MINSTAL " \x22%s\x22", db_item->name);
 	write_pdb_string(fp1, PDB_HDR_TITLE, temp_buffer);
 	write_pdb_string(fp2, PDB_HDR_TITLE, temp_buffer);
 
-	// 000000CB - PKG file name
+	// 000000CB - Имя файла PKG
 	write_pdb_string(fp1, PDB_HDR_FILENAME, root);
 	write_pdb_string(fp2, PDB_HDR_FILENAME, root);
 
-	// 00000000 - Icon location / path (PNG w/o extension) 
+	// 00000000 - Расположение / путь значка (PNG без расширения)
     pkgi_snprintf(temp_buffer, sizeof(temp_buffer), "%s/%s", path, "ICON_FILE");
 	write_pdb_string(fp2, PDB_HDR_UNUSED, temp_buffer);
 
-	// 0000006A - Icon location / path (PNG w/o extension) 
+	// 0000006A - Расположение / путь значка (PNG без расширения)
 	write_pdb_string(fp1, PDB_HDR_ICON, temp_buffer);
 	write_pdb_string(fp2, PDB_HDR_ICON, temp_buffer);
 
@@ -212,17 +213,17 @@ static void calculate_eta(uint32_t speed)
     uint64_t seconds = (download_size - download_offset) / speed;
     if (seconds < 60)
     {
-        pkgi_snprintf(dialog_eta, sizeof(dialog_eta), "ETA: %us", (uint32_t)seconds);
+        pkgi_snprintf(dialog_eta, sizeof(dialog_eta), "Осталось: %u сек", (uint32_t)seconds);
     }
     else if (seconds < 3600)
     {
-        pkgi_snprintf(dialog_eta, sizeof(dialog_eta), "ETA: %um %02us", (uint32_t)(seconds / 60), (uint32_t)(seconds % 60));
+        pkgi_snprintf(dialog_eta, sizeof(dialog_eta), "Осталось: %u мин %02u сек", (uint32_t)(seconds / 60), (uint32_t)(seconds % 60));
     }
     else
     {
         uint32_t hours = (uint32_t)(seconds / 3600);
         uint32_t minutes = (uint32_t)((seconds - hours * 3600) / 60);
-        pkgi_snprintf(dialog_eta, sizeof(dialog_eta), "ETA: %uh %02um", hours, minutes);
+        pkgi_snprintf(dialog_eta, sizeof(dialog_eta), "Осталось: %u час %02u мин", hours, minutes);
     }
 }
 
@@ -236,25 +237,25 @@ static void update_progress(void)
 
         if (download_resume)
         {
-            // if resuming download, then there is no "download speed"
+            // если возобновить загрузку, то нет "скорости загрузки"
             dialog_extra[0] = 0;
         }
         else
         {
-            // report download speed
+            // отчет о скорости загрузки
             uint32_t speed = (uint32_t)(((download_offset - initial_offset) * 1000) / (info_now - info_start));
             if (speed > 10 * 1000 * 1024)
             {
-                pkgi_snprintf(dialog_extra, sizeof(dialog_extra), "%u MB/s", speed / 1024 / 1024);
+                pkgi_snprintf(dialog_extra, sizeof(dialog_extra), "%u МБ/с", speed / 1024 / 1024);
             }
             else if (speed > 1000)
             {
-                pkgi_snprintf(dialog_extra, sizeof(dialog_extra), "%u KB/s", speed / 1024);
+                pkgi_snprintf(dialog_extra, sizeof(dialog_extra), "%u КБ/с", speed / 1024);
             }
 
             if (speed != 0)
             {
-                // report ETA
+                // отчет о расчетном времени скачивания - ETA
                 calculate_eta(speed);
             }
         }
@@ -262,12 +263,12 @@ static void update_progress(void)
         float percent;
         if (download_resume)
         {
-            // if resuming, then we may not know download size yet, use total_size from pkg header
+            // при возобновлении, возможно, мы еще не знаем размер загрузки, используйте total_size из заголовка pkg
             percent = total_size ? (float)((double)download_offset / total_size) : 0.f;
         }
         else
         {
-            // when downloading use content length from http response as download size
+            // при загрузке используйте длину содержимого из ответа http в качестве размера загрузки
             percent = download_size ? (float)((double)download_offset / download_size) : 0.f;
         }
 
@@ -281,18 +282,18 @@ static int create_dummy_pkg(void)
 	char dst[256];
 	pkgi_snprintf(dst, sizeof(dst), PKGI_QUEUE_FOLDER "/%d/%s", queue_task_id, root);
 
-	LOG("Creating empty file '%s'...", dst);
-	if (!pkgi_save(dst, "PKGi PS3 MOD", 8))
+	LOG("Создание пустого файла '%s'...", dst);
+	if (!pkgi_save(dst, "PKGi PS3 RUS MOD", 8))
 		return 0;
 
 	download_offset=0;
 	if (truncate(dst, download_size) != 0)
 	{
-		LOG("Error truncating (%s)", dst);
+		LOG("Ошибка усечения (%s)", dst);
 		return 0;
 	}
 
-	LOG("(%s) %d bytes written", dst, download_size);
+	LOG("(%s) %d записано байт", dst, download_size);
 	download_offset=download_size;
     return 1;
 }
@@ -302,23 +303,23 @@ static int queue_pkg_task(void)
 	char pszPKGDir[256];
 	
     initial_offset = 0;
-    LOG("requesting %s @ %llu", db_item->url, 0);
+    LOG("Запрашиваем %s @ %llu", db_item->url, 0);
     http = pkgi_http_get(db_item->url, db_item->content, 0);
     if (!http)
     {
-    	pkgi_dialog_error("Could not send HTTP request");
+    	pkgi_dialog_error("Не удалось отправить HTTP-запрос");
         return 0;
     }
 
     int64_t http_length;
     if (!pkgi_http_response_length(http, &http_length))
     {
-        pkgi_dialog_error("HTTP request failed");
+        pkgi_dialog_error("Ошибка HTTP-запроса");
         return 0;
     }
     if (http_length < 0)
     {
-        pkgi_dialog_error("HTTP response has unknown length");
+        pkgi_dialog_error("HTTP-ответ имеет неизвестную длину");
         return 0;
     }
 
@@ -327,7 +328,7 @@ static int queue_pkg_task(void)
 
     if (!pkgi_check_free_space(http_length))
     {
-        pkgi_dialog_error("Not enough free space on HDD");
+        pkgi_dialog_error("Недостаточно свободного места на HDD");
         return 0;
     }
 
@@ -336,27 +337,27 @@ static int queue_pkg_task(void)
 
 	if(!pkgi_mkdirs(pszPKGDir))
 	{
-		pkgi_dialog_error("Could not create task directory on HDD.");
+		pkgi_dialog_error("Не удалось создать каталог задач на HDD.");
 		return 0;
 	}
 
-    LOG("http response length = %lld, total pkg size = %llu", http_length, download_size);
+    LOG("http длина ответа = %lld, размер pkg = %llu", http_length, download_size);
     info_start = pkgi_time_msec();
     info_update = pkgi_time_msec() + 500;
 
-    pkgi_dialog_set_progress_title("Saving background task...");
+    pkgi_dialog_set_progress_title(MSAVE);
     pkgi_strncpy(item_name, sizeof(item_name), root);
     download_resume = 0;
     
     if(!create_dummy_pkg())
 	{
-		pkgi_dialog_error("Could not create PKG file to HDD.");
+		pkgi_dialog_error("Не удалось создать файл PKG на HDD.");
 		return 0;
 	}
     
 	if(!create_queue_pdb_files())
 	{
-		pkgi_dialog_error("Could not create task files to HDD.");
+		pkgi_dialog_error("Не удалось создать файлы задач на HDD.");
 		return 0;
 	}
 
@@ -365,10 +366,10 @@ static int queue_pkg_task(void)
 
 static void download_start(void)
 {
-    LOG("Resuming pkg download from %llu offset", download_offset);
+    LOG("Возобновление загрузки PKG с позиции %llu", download_offset);
     download_resume = 0;
     info_update = pkgi_time_msec() + 1000;
-    pkgi_dialog_set_progress_title("Downloading...");
+    pkgi_dialog_set_progress_title(MDOWN);
 }
 
 static int download_data(uint8_t* buffer, uint32_t size, int save)
@@ -384,23 +385,23 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
     if (!http)
     {
         initial_offset = download_offset;
-        LOG("Requesting %s @ %llu", db_item->url, download_offset);
+        LOG("Запрос %s @ %llu", db_item->url, download_offset);
         http = pkgi_http_get(db_item->url, db_item->content, download_offset);
         if (!http)
         {
-            pkgi_dialog_error("Could not send HTTP request");
+            pkgi_dialog_error("Не удалось отправить HTTP-запрос");
             return 0;
         }
 
         int64_t http_length;
         if (!pkgi_http_response_length(http, &http_length))
         {
-            pkgi_dialog_error("HTTP request failed");
+            pkgi_dialog_error("Ошибка HTTP-запроса");
             return 0;
         }
         if (http_length < 0)
         {
-            pkgi_dialog_error("HTTP response has unknown length");
+            pkgi_dialog_error("HTTP-ответ имеет неизвестную длину");
             return 0;
         }
 
@@ -412,7 +413,7 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
             return 0;
         }
 
-        LOG("HTTP response length = %lld, total pkg size = %llu", http_length, download_size);
+        LOG("http длина ответа = %lld, всего размер pkg = %llu", http_length, download_size);
         info_start = pkgi_time_msec();
         info_update = pkgi_time_msec() + 500;
     }
@@ -421,14 +422,14 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
     if (read < 0)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "HTTP download error 0x%08x", read);
+        pkgi_snprintf(error, sizeof(error), "Ошибка загрузки HTTP 0x%08x", read);
         pkgi_dialog_error(error);
         pkgi_save(resume_file, &sha, sizeof(sha));
         return -1;
     }
     else if (read == 0)
     {
-        pkgi_dialog_error("HTTP connection closed");
+        pkgi_dialog_error("HTTP-соединение закрыто");
         pkgi_save(resume_file, &sha, sizeof(sha));
         return -1;
     }
@@ -441,7 +442,7 @@ static int download_data(uint8_t* buffer, uint32_t size, int save)
         if (!pkgi_write(item_file, buffer, read))
         {
             char error[256];
-            pkgi_snprintf(error, sizeof(error), "Failed to write to %s", item_path);
+            pkgi_snprintf(error, sizeof(error), "Не удалось записать в %s", item_path);
             pkgi_dialog_error(error);
             return -1;
         }
@@ -461,17 +462,17 @@ static int create_file(void)
     if (!pkgi_mkdirs(folder))
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Cannot create folder %s", folder);
+        pkgi_snprintf(error, sizeof(error), "Не удалось создать папку %s", folder);
         pkgi_dialog_error(error);
         return 0;
     }
 
-    LOG("creating %s file", item_name);
+    LOG("Создание файла %s", item_name);
     item_file = pkgi_create(item_path);
     if (!item_file)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Cannot create file %s", item_name);
+        pkgi_snprintf(error, sizeof(error), "Не удалось создать файл %s", item_name);
         pkgi_dialog_error(error);
         return 0;
     }
@@ -481,12 +482,12 @@ static int create_file(void)
 
 static int resume_partial_file(void)
 {
-    LOG("resuming %s file", item_name);
+    LOG("Возобновление файла %s", item_name);
     item_file = pkgi_append(item_path);
     if (!item_file)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Cannot resume file %s", item_name);
+        pkgi_snprintf(error, sizeof(error), "Невозможно возобновить файл %s", item_name);
         pkgi_dialog_error(error);
         return 0;
     }
@@ -496,7 +497,7 @@ static int resume_partial_file(void)
 
 static int download_pkg_file(void)
 {
-    LOG("Downloading %s", root);
+    LOG("Скачивание %s", root);
 
     int result = 0;
 
@@ -527,7 +528,7 @@ static int download_pkg_file(void)
         }
     }
 
-    LOG("%s downloaded", item_path);
+    LOG("%s скачано", item_path);
     result = 1;
 
 bail:
@@ -543,33 +544,33 @@ static int check_integrity(const uint8_t* digest)
 {
     if (!digest)
     {
-        LOG("No integrity provided, skipping check");
+        LOG("Целостность не обеспечивается, пропуск проверки");
         return 1;
     }
 
     uint8_t check[SHA256_DIGEST_SIZE];
     sha256_finish(&sha, check);
 
-    LOG("Checking integrity of pkg");
+    LOG("Проверка целостности pkg");
     if (!pkgi_memequ(digest, check, SHA256_DIGEST_SIZE))
     {
-        LOG("pkg integrity is wrong, removing %s & resume data", item_path);
+        LOG("Целостность pkg неверна, удаление %s & возобновление данных", item_path);
 
         pkgi_rm(item_path);
         pkgi_rm(resume_file);
 
-        pkgi_dialog_error("pkg integrity failed, try downloading again");
+        pkgi_dialog_error("Ошибка целостности pkg, попробуйте загрузить снова");
         return 0;
     }
 
-    LOG("pkg integrity check succeeded");
+    LOG("Проверка целостности pkg прошла успешно");
     return 1;
 }
 
 static int create_rap(const char* contentid, const uint8_t* rap)
 {
-    LOG("Creating %s.rap", contentid);
-    pkgi_dialog_update_progress("Creating RAP file", NULL, NULL, 1.f);
+    LOG("Создание %s.rap", contentid);
+    pkgi_dialog_update_progress("Создание файла RAP...", NULL, NULL, 1.f);
 
     char path[256];
     pkgi_snprintf(path, sizeof(path), "%s/%s.rap", PKGI_RAP_FOLDER, contentid);
@@ -577,12 +578,12 @@ static int create_rap(const char* contentid, const uint8_t* rap)
     if (!pkgi_save(path, rap, PKGI_RAP_SIZE))
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Cannot save %s.rap", contentid);
+        pkgi_snprintf(error, sizeof(error), "Невозможно сохранить %s.rap", contentid);
         pkgi_dialog_error(error);
         return 0;
     }
 
-    LOG("RAP file created");
+    LOG("Файл RAP создан");
     return 1;
 }
 
@@ -603,7 +604,7 @@ static int create_rif(const char* contentid, const uint8_t* rap)
             {
                 pkgi_snprintf(path, sizeof(path)-1, "%s%s%s", "/dev_hdd0/home/", dir->d_name, "/exdata/");
             	lic_path = path;
-            	LOG("using folder '%s'", lic_path);
+            	LOG("Используется папка '%s'", lic_path);
                 break;
             }
         }
@@ -612,22 +613,22 @@ static int create_rif(const char* contentid, const uint8_t* rap)
 
     if (!lic_path)
     {
-    	LOG("Skipping %s.rif: no act.dat file found", contentid);
+    	LOG("Пропущен %s.rif: act.dat в активированном профиле не найден", contentid);
     	return 1;
     }
 
-    LOG("creating %s.rif", contentid);
-    pkgi_dialog_update_progress("Creating RIF file", NULL, NULL, 1.f);
+    LOG("Создание %s.rif", contentid);
+    pkgi_dialog_update_progress("Создание файла RIF...", NULL, NULL, 1.f);
 
     if (!rap2rif(rap, contentid, lic_path))
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Cannot save %s.rif", contentid);
+        pkgi_snprintf(error, sizeof(error), "Невозможно сохранить %s.rif", contentid);
         pkgi_dialog_error(error);
         return 0;
     }
 
-    LOG("RIF file created");
+    LOG("Файл RIF создан");
     return 1;
 }
 
@@ -636,19 +637,19 @@ int pkgi_download(const DbItem* item, const int background_dl)
     int result = 0;
 
     pkgi_snprintf(root, sizeof(root), "%.9s.pkg", item->content + 7);
-    LOG("Package installation file: %s", root);
+    LOG("Установочный файл пакета: %s", root);
 
     pkgi_snprintf(resume_file, sizeof(resume_file), "%s/%.9s.resume", pkgi_get_temp_folder(), item->content + 7);
     if (pkgi_load(resume_file, &sha, sizeof(sha)) == sizeof(sha))
     {
-        LOG("Resume file exists, trying to resume");
-        pkgi_dialog_set_progress_title("Resuming...");
+        LOG("Файл существует, попытка возобновления");
+        pkgi_dialog_set_progress_title(MRESUME);
         download_resume = 1;
     }
     else
     {
-        LOG("Cannot load resume file, starting download from scratch");
-        pkgi_dialog_set_progress_title(background_dl ? "Adding background task..." : "Downloading...");
+        LOG("Не удается загрузить файл, загрузка начинается с начала");
+		pkgi_dialog_set_progress_title(background_dl ? MTASK : MDOWN);
         download_resume = 0;
         sha256_init(&sha);
         sha256_starts(&sha, 0);
@@ -671,7 +672,7 @@ int pkgi_download(const DbItem* item, const int background_dl)
         if (!create_rif(item->content, item->rap)) goto finish;
     }
 
-    pkgi_dialog_update_progress("Downloading icon", NULL, NULL, 1.f);
+    pkgi_dialog_update_progress("Скачивание иконки...", NULL, NULL, 1.f);
     if (!pkgi_download_icon(item->content)) goto finish;
 
     if (background_dl)
@@ -709,18 +710,18 @@ int pkgi_install(const char *titleid)
 
 	if (!pkgi_mkdirs(pkg_path))
 	{
-		pkgi_dialog_error("Could not create install directory on HDD.");
+		pkgi_dialog_error("Не удалось создать установочный каталог на HDD.");
 		return 0;
 	}
 
-	LOG("Creating .pdb files [%s]", titleid);
+	LOG("Создание файлов .pdb [%s]", titleid);
 
 	// write - ICON_FILE
 	pkgi_snprintf(filename, sizeof(filename), "%s/ICON_FILE", pkg_path);
 	pkgi_snprintf(resume_file, sizeof(resume_file), "%s/%s.PNG", pkgi_get_temp_folder(), titleid);
 	if (rename(resume_file, filename) != 0)
 	{
-	    LOG("Error saving %s", filename);
+	    LOG("Ошибка сохранения %s", filename);
 	    return 0;
     }
 
@@ -731,7 +732,7 @@ int pkgi_install(const char *titleid)
     pkgi_snprintf(filename, sizeof(filename), "%s/%s", pkg_path, root);
     pkgi_snprintf(pkg_path, sizeof(pkg_path), "%s/%s", pkgi_get_temp_folder(), root);
     
-    LOG("move (%s) -> (%s)", pkg_path, filename);
+    LOG("Перемещение (%s) -> (%s)", pkg_path, filename);
     
 	return (rename(pkg_path, filename) == 0);
 }
@@ -743,7 +744,7 @@ int pkgi_download_icon(const char* content)
     uint8_t hmac[20];
 
     pkgi_snprintf(icon_file, sizeof(icon_file), PKGI_TMP_FOLDER "/%.9s.PNG", content + 7);
-    LOG("package icon file: %s", icon_file);
+    LOG("Файл значка пакета: %s", icon_file);
 
     if (pkgi_get_size(icon_file) > 0)
         return 1;
@@ -760,14 +761,14 @@ int pkgi_download_icon(const char* content)
     pkgi_http* http = pkgi_http_get(icon_url, NULL, 0);
     if (!http)
     {
-        LOG("HTTP request to %s failed", icon_url);
+        LOG("HTTP-запрос к %s не удался", icon_url);
         return pkgi_save(icon_file, iconfile_data, iconfile_data_size);
     }
 
     int64_t sz;
     if (!pkgi_http_response_length(http, &sz))
     {
-        LOG("Icon not found, using default");
+        LOG("Иконка не найдена, используется иконка по умолчанию");
         pkgi_http_close(http);
         return pkgi_save(icon_file, iconfile_data, iconfile_data_size);
     }
@@ -793,7 +794,7 @@ int pkgi_download_icon(const char* content)
 
     if (size != 0)
     {
-        LOG("Received %u bytes", size);
+        LOG("Получено %u байт", size);
     }
 
     pkgi_close(f);

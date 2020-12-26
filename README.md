@@ -1,9 +1,9 @@
-# PKGi PS3 MOD
+# PKGi PS3
 
 [![Downloads][img_downloads]][pkgi_downloads] [![Release][img_latest]][pkgi_latest] [![License][img_license]][pkgi_license]
 
 
-**PKGi PS3 MOD** is a PlayStation 3 port of PSVita [pkgi](https://github.com/mmozeiko/pkgi).
+**PKGi PS3** is a PlayStation 3 port of PSVita [pkgi](https://github.com/mmozeiko/pkgi).
 
 The `pkgi-ps3` homebrew app allows to download and install `.pkg` files directly on your PS3.
 
@@ -98,7 +98,7 @@ where:
 An example `pkgi.txt` file:
 ```
 EP0000-NP9999999_00-0AB00A00FR000000,0,My PKG Test,A description of my pkg,dac109e963294de6cd6f6faf3f045fe9,http://192.168.1.1/html/mypackage.pkg,2715513,afb545c6e71bd95f77994ab4a659efbb8df32208f601214156ad89b1922e73c3
-UP0001-NP00PKGI3_00-0000000000000000,0,PKGi PS3 MOD v0.1.0,,,http://bucanero.heliohost.org/pkgi.pkg,284848,3dc8de2ed94c0f9efeafa81df9b7d58f8c169e2875133d6d2649a7d477c1ae13
+UP0001-NP00PKGI3_00-0000000000000000,0,PKGi PS3 v0.1.0,,,http://bucanero.heliohost.org/pkgi.pkg,284848,3dc8de2ed94c0f9efeafa81df9b7d58f8c169e2875133d6d2649a7d477c1ae13
 ```
 ### Content types
 
@@ -204,7 +204,7 @@ Run `make` to create a release build. After that, run `make pkg` to create a `.p
 You can also set the environment variable `PS3LOAD=tcp:x.x.x.x` to the PS3's IP address;
 that will allow you to use `make run` and send `pkgi-ps3.self` directly to the PS3Load listener.
 
-To enable debug logging, build PKGi PS3 MOD with `make DEBUGLOG=1`. The application will send debug messages to
+To enable debug logging, build PKGi PS3 with `make DEBUGLOG=1`. The application will send debug messages to
 UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat][] on your PC:
 
     $ socat udp4-recv:30000,ip-add-membership=239.255.0.100:0.0.0.0 -

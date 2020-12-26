@@ -35,44 +35,43 @@ typedef struct {
 
 static const MenuEntry menu_entries[] =
 {
-    { MenuSearch, "Search...", 0 },
+    { MenuSearch, "Поиск...", 0 },
     { MenuSearchClear, PKGI_UTF8_CLEAR " clear", 0 },
 
-    { MenuText, "Sort by:", 0 },
-    { MenuSort, "Title", SortByTitle },
-    { MenuSort, "Region", SortByRegion },
-    { MenuSort, "Name", SortByName },
-    { MenuSort, "Size", SortBySize },
+    { MenuText, "Сортировка:", 0 },
+    { MenuSort, "TitleID", SortByTitle },
+    { MenuSort, "Регион", SortByRegion },
+    { MenuSort, "Название", SortByName },
+    { MenuSort, "Размер", SortBySize },
 
-    { MenuText, "Content:", 0 },
-    { MenuContent, "All", 0 },
+    { MenuText, "Контент:", 0 },
+    { MenuContent, "Все", 0 },
 
-    { MenuText, "Regions:", 0 },
-    { MenuFilter, "Asia", DbFilterRegionASA },
-    { MenuFilter, "Europe", DbFilterRegionEUR },
-    { MenuFilter, "Japan", DbFilterRegionJPN },
-    { MenuFilter, "USA", DbFilterRegionUSA },
+    { MenuText, "Регионы:", 0 },
+    { MenuFilter, "Азия", DbFilterRegionASA },
+    { MenuFilter, "Европа", DbFilterRegionEUR },
+    { MenuFilter, "Япония", DbFilterRegionJPN },
+    { MenuFilter, "Америка", DbFilterRegionUSA },
 
-    { MenuText, "Options:", 0 },
-    { MenuMode, "BG Download", 1 },
-    { MenuMusic, "Music", 1 },
-    { MenuUpdate, "Updates", 1 },
+    { MenuText, "Параметры:", 0 },
+    { MenuMode, "Фоновая загрузка", 1 },
+    { MenuMusic, "Мелодия §", 1 },
+    { MenuUpdate, "Обновление", 1 },
 
-    { MenuRefresh, "Refresh...", 0 },
+    { MenuRefresh, "Обновить базу...", 0 },
 };
 
 static const MenuEntry content_entries[] = 
 {
-    { MenuFilter, "All", DbFilterAllContent },
-    { MenuFilter, "Games", DbFilterContentGame },
-    { MenuFilter, "DLCs", DbFilterContentDLC },
-    { MenuFilter, "Themes", DbFilterContentTheme },
-    { MenuFilter, "Avatars", DbFilterContentAvatar },
-    { MenuFilter, "Demos", DbFilterContentDemo },
-    { MenuFilter, "Managers", DbFilterContentManager },
-    { MenuFilter, "Emulators", DbFilterContentEmulator },
-    { MenuFilter, "Apps", DbFilterContentApp },
-    { MenuFilter, "Tools", DbFilterContentTool }
+    { MenuFilter, "Все", DbFilterAllContent },
+    { MenuFilter, "Игры из регионов", DbFilterContentGame },
+    { MenuFilter, "Игры на русском", DbFilterContentRUS },
+    { MenuFilter, "Дополнения DLC", DbFilterContentDLC },
+    { MenuFilter, "Темы оформления", DbFilterContentTheme },
+    { MenuFilter, "Аватары", DbFilterContentAvatar },
+    { MenuFilter, "Демо", DbFilterContentDemo },
+    { MenuFilter, "Менеджеры", DbFilterContentManager },
+    { MenuFilter, "Приложения", DbFilterContentApp }
 };
 
 int pkgi_menu_is_open(void)
@@ -292,7 +291,7 @@ int pkgi_do_menu(pkgi_input* input)
         else if (type == MenuMode)
         {
             pkgi_snprintf(text, sizeof(text), PKGI_UTF8_CLEAR " %s",
-                menu_config.dl_mode_background == entry->value ? entry->text : "Direct DL");            
+                menu_config.dl_mode_background == entry->value ? entry->text : "Прямая загрузка");            
         }
         else if (type == MenuMusic)
         {

@@ -10,7 +10,7 @@ endif
 #---------------------------------------------------------------------------------
 #  TITLE, APPID, CONTENTID, ICON0 SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
-TITLE		:=	PKGi PS3 MOD
+TITLE		:=	PKGi PS3 RUS MOD
 APPID		:=	NP00PKGI3
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 ICON0		:=	ICON0.PNG
@@ -129,7 +129,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).self  EBOOT.BIN
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).self $(OUTPUT).fake.self EBOOT.BIN
 
 #---------------------------------------------------------------------------------
 run:

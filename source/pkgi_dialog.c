@@ -302,7 +302,7 @@ void pkgi_do_dialog(pkgi_input* input)
         if (local_allow_close)
         {
             char text[256];
-            pkgi_snprintf(text, sizeof(text), "Press %s to cancel", pkgi_ok_button() == PKGI_BUTTON_X ? PKGI_UTF8_O : PKGI_UTF8_X);
+            pkgi_snprintf(text, sizeof(text), "Нажмите %s  чтобы отменить", pkgi_ok_button() == PKGI_BUTTON_X ? PKGI_UTF8_O : PKGI_UTF8_X);
             pkgi_draw_text_z((VITA_WIDTH - pkgi_text_width(text)) / 2, PKGI_DIALOG_VMARGIN + h - 2 * font_height, PKGI_DIALOG_TEXT_Z, PKGI_COLOR_TEXT_DIALOG, text);
         }
     }
@@ -316,7 +316,7 @@ void pkgi_do_dialog(pkgi_input* input)
         if (local_allow_close)
         {
             char text[256];
-            pkgi_snprintf(text, sizeof(text), "Press %s to close", pkgi_ok_button() == PKGI_BUTTON_X ? PKGI_UTF8_X : PKGI_UTF8_O);
+            pkgi_snprintf(text, sizeof(text), "Нажмите %s  чтобы закрыть", pkgi_ok_button() == PKGI_BUTTON_X ? PKGI_UTF8_X : PKGI_UTF8_O);
             pkgi_draw_text_z((VITA_WIDTH - pkgi_text_width(text)) / 2, PKGI_DIALOG_VMARGIN + h - 2 * font_height, PKGI_DIALOG_TEXT_Z, PKGI_COLOR_TEXT_DIALOG, text);
         }
     }
@@ -347,7 +347,7 @@ void pkgi_do_dialog(pkgi_input* input)
         if (local_allow_close)
         {
             char text[256];
-            pkgi_snprintf(text, sizeof(text), "Press %s to close", pkgi_ok_button() == PKGI_BUTTON_X ? PKGI_UTF8_X : PKGI_UTF8_O);
+            pkgi_snprintf(text, sizeof(text), "Нажмите %s  чтобы закрыть", pkgi_ok_button() == PKGI_BUTTON_X ? PKGI_UTF8_X : PKGI_UTF8_O);
             pkgi_draw_text_z((VITA_WIDTH - pkgi_text_width(text)) / 2, PKGI_DIALOG_VMARGIN + h - 2 * font_height, PKGI_DIALOG_TEXT_Z, PKGI_COLOR_TEXT_DIALOG, text);
         }
     }

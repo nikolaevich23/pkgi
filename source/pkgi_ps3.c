@@ -197,7 +197,7 @@ static void pkgi_start_debug_log(void)
 {
 #ifdef PKGI_ENABLE_LOGGING
     dbglogger_init();
-    LOG("PKGi PS3 MOD logging initialized");
+    LOG("PKGi PS3 RUS MOD ведение журнала инициализировано");
 
     dbglogger_failsafe("9999");
 #endif
@@ -242,12 +242,12 @@ void init_music(void)
     md_mode |= DMODE_SOFT_MUSIC | DMODE_STEREO | DMODE_HQMIXER | DMODE_16BITS;
     
     if (MikMod_Init("")) {
-        LOG("Could not initialize sound: %s", MikMod_strerror(MikMod_errno));
+        LOG("Не удалось инициализировать звук: %s", MikMod_strerror(MikMod_errno));
         return;
     }
     
-    LOG("Init %s", MikMod_InfoDriver());
-    LOG("Loader %s", MikMod_InfoLoader());
+    LOG("Инициализация %s", MikMod_InfoDriver());
+    LOG("Загрузчик %s", MikMod_InfoLoader());
     
     mem_reader = new_mikmod_mem_reader(haiku_s3m_bin, haiku_s3m_bin_size);
     module = Player_LoadGeneric(mem_reader, 64, 0);
@@ -260,10 +260,10 @@ void pkgi_start_music(void)
 {
     if (module) {
         /* start module */
-        LOG("Playing %s", module->songname);
+        LOG("Воспроизведение %s", module->songname);
         Player_Start(module);
     } else
-        LOG("Could not load module: %s", MikMod_strerror(MikMod_errno));
+        LOG("Не удалось загрузить модуль: %s", MikMod_strerror(MikMod_errno));
 }
 
 void pkgi_stop_music(void)
@@ -305,7 +305,7 @@ int pkgi_dialog_lock(void)
     int res = sysMutexLock(g_dialog_lock, 0);
     if (res != 0)
     {
-        LOG("dialog lock failed error=0x%08x", res);
+        LOG("Ошибка блокировки диалога=0x%08x", res);
     }
     return (res == 0);
 }
@@ -315,7 +315,7 @@ int pkgi_dialog_unlock(void)
     int res = sysMutexUnlock(g_dialog_lock);
     if (res != 0)
     {
-        LOG("dialog unlock failed error=0x%08x", res);
+        LOG("Ошибка разблокировки диалогового окна=0x%08x", res);
     }
     return (res == 0);
 }
@@ -554,7 +554,7 @@ void pkgi_dialog_input_text(const char* title, const char* text)
     }
 
 error_end:
-    LOG("Keyboard Init failed, error 0x%08x", ret);
+    LOG("Инициализация клавиатуры не удалась, ошибка 0x%08x", ret);
 
     osk_exit();
     osk_level = 0;
@@ -1123,22 +1123,22 @@ void pkgi_draw_text_z(int x, int y, int z, uint32_t color, const char* text)
                 j += PKGI_FONT_HEIGHT;
                 text++;
                 continue;
-            case '\xfa':
+            case '\xaa':
                 pkgi_draw_texture_z(tex_buttons.circle, i, j, z, 0.5f);
                 i += PKGI_FONT_WIDTH;
                 text++;
                 continue;
-            case '\xfb':
+            case '\xab':
                 pkgi_draw_texture_z(tex_buttons.cross, i, j, z, 0.5f);
                 i += PKGI_FONT_WIDTH;
                 text++;
                 continue;
-            case '\xfc':
+            case '\xac':
                 pkgi_draw_texture_z(tex_buttons.triangle, i, j, z, 0.5f);
                 i += PKGI_FONT_WIDTH;
                 text++;
                 continue;
-            case '\xfd':
+            case '\xad':
                 pkgi_draw_texture_z(tex_buttons.square, i, j, z, 0.5f);
                 i += PKGI_FONT_WIDTH;
                 text++;
