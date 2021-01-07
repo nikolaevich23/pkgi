@@ -194,10 +194,11 @@ You need to have installed:
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
-- [YA2D](https://github.com/nikolaevich23/pkgi/ya2d_ps3) library (an extended version from my repo)
+- [YA2D](https://github.com/nikolaevich23/pkgi/tree/master/ya2d_ps3) library (an extended version from my repo)
 - [PolarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
 - [MikMod](https://github.com/ps3dev/ps3libraries/blob/master/scripts/011-libmikmod-3.1.11.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
+- [TSV_Converter_PS3](https://github.com/nikolaevich23/pkgi/tree/master/TSV_Converter_PS3) TSV Converter
 
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
 
