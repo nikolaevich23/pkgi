@@ -4,6 +4,14 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ## [Unreleased]()
 
+## [v1.1.8.2](https://github.com/ErikPshat/PKGi-PS3-RUS-MOD/releases/tag/v1.1.8.2) - 2021-01-07
+
+### Changed
+
+### Fixed
+
+* ??? when defining regions.
+
 ## [v1.1.8.1](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.1) - 2020-12-26
 
 ### Changed

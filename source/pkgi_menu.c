@@ -71,7 +71,8 @@ static const MenuEntry content_entries[] =
     { MenuFilter, "Аватары", DbFilterContentAvatar },
     { MenuFilter, "Демо", DbFilterContentDemo },
     { MenuFilter, "Менеджеры", DbFilterContentManager },
-    { MenuFilter, "Приложения", DbFilterContentApp }
+    { MenuFilter, "Приложения", DbFilterContentApp },
+    { MenuFilter, "Читы к играм", DbFilterContentCheat },
 };
 
 int pkgi_menu_is_open(void)

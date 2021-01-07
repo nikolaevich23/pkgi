@@ -223,6 +223,7 @@ const char* pkgi_content_tag(ContentType content)
     case ContentDemo: return "_demos";
     case ContentManager: return "_managers";
     case ContentApp: return "_apps";
+    case ContentCheat: return "_cheats";
     default: return "";
     }
 }

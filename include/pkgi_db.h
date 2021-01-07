@@ -41,9 +41,10 @@ typedef enum {
     DbFilterContentDemo     = 0x002000,
     DbFilterContentManager  = 0x004000,
     DbFilterContentApp      = 0x008000,
+    DbFilterContentCheat    = 0x010000,
 
     DbFilterAllRegions = DbFilterRegionUSA | DbFilterRegionEUR | DbFilterRegionJPN | DbFilterRegionASA,
-    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp,
+    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp | DbFilterContentCheat,
     DbFilterAll = DbFilterAllRegions | DbFilterAllContent | DbFilterInstalled | DbFilterMissing,
 } DbFilter;
 
@@ -56,7 +57,8 @@ typedef enum {
     ContentAvatar,
     ContentDemo,
     ContentManager,
-    ContentApp
+    ContentApp,
+    ContentCheat,
 } ContentType;
 
 typedef struct {

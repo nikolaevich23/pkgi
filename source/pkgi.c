@@ -180,7 +180,7 @@ int pkgi_check_free_space(uint64_t size)
     if (size > free + 1024 * 1024)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Для pkg требуется %u %s свободного места, доступно %u %s",
+        pkgi_snprintf(error, sizeof(error), "Требуется %u %s свободного места, доступно %u %s",
             friendly_size(size), friendly_size_str(size),
             friendly_size(free), friendly_size_str(free)
         );
@@ -228,6 +228,7 @@ static const char* content_type_str(ContentType content)
     case ContentDemo: return "Demo";
     case ContentManager: return "Manager";
     case ContentApp: return "App";
+    case ContentCheat: return "Cheat";
     default: return "Unknown";
     }
 }

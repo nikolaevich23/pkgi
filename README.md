@@ -25,7 +25,7 @@ The `pkgi-ps3` homebrew app allows to download and install `.pkg` files directly
 
 # Download
 
-Get the [latest version here](https://github.com/nikolaevich23/pkgi/releases/latest).
+Get the [latest version here][pkgi_latest].
 
 ### Changelog
 
@@ -194,7 +194,7 @@ You need to have installed:
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
-- [YA2D](https://github.com/nikolaevich23/pkgi/tree/master/ya2d_ps3) library (an extended version from my repo)
+- [YA2D](https://github.com/bucanero/ya2d_ps3) library (an extended version from my repo)
 - [PolarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
 - [MikMod](https://github.com/ps3dev/ps3libraries/blob/master/scripts/011-libmikmod-3.1.11.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
@@ -215,9 +215,9 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 [PSDLE]: https://repod.github.io/psdle/
 [socat]: http://www.dest-unreach.org/socat/
-[pkgi_downloads]: https://github.com/nikolaevich23/pkgi/releases
-[pkgi_latest]: https://github.com/nikolaevich23/pkgi/releases/latest
-[pkgi_license]: https://github.com/nikolaevich23/pkgi/blob/master/LICENSE
-[img_downloads]: https://img.shields.io/github/downloads/nikolaevich23/pkgi/total.svg?maxAge=3600
-[img_latest]: https://img.shields.io/github/release/nikolaevich23/pkgi.svg?maxAge=3600
-[img_license]: https://img.shields.io/github/license/nikolaevich23/pkgi.svg?maxAge=2592000
+[pkgi_downloads]: https://github.com/bucanero/pkgi-ps3/releases
+[pkgi_latest]: https://github.com/bucanero/pkgi-ps3/releases/latest
+[pkgi_license]: https://github.com/bucanero/pkgi-ps3/blob/master/LICENSE
+[img_downloads]: https://img.shields.io/github/downloads/bucanero/pkgi-ps3/total.svg?maxAge=3600
+[img_latest]: https://img.shields.io/github/release/bucanero/pkgi-ps3.svg?maxAge=3600
+[img_license]: https://img.shields.io/github/license/bucanero/pkgi-ps3.svg?maxAge=2592000
