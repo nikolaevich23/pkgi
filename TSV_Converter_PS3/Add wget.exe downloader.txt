@@ -1,2 +1,0 @@
-https://eternallybored.org/misc/wget/1.20.3/32/wget.exe (32-bit)
-https://eternallybored.org/misc/wget/1.20.3/64/wget.exe (64-bit)
