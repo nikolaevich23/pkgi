@@ -1,7 +1,7 @@
 ya2d_ps3
 ========
 
-YA2D library for PS3
+YA2D font library for PS3
 
 ## Building
 ```
