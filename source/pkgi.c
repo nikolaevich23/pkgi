@@ -744,7 +744,7 @@ int main(int argc, const char* argv[])
     state = StateRefreshing;
     pkgi_start_thread("refresh_thread", &pkgi_refresh_thread);
 
-    pkgi_texture background = pkgi_load_image_buffer(background, jpg);
+    pkgi_texture background = pkgi_load_image_buffer(background, png);
 
     if (config.version_check)
     {
