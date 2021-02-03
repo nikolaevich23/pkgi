@@ -1,4 +1,4 @@
-# PKGi PS3
+# PKGi PS3 RUS MOD
 
 [![Downloads][img_downloads]][pkgi_downloads] [![Release][img_latest]][pkgi_latest] [![License][img_license]][pkgi_license]
 
