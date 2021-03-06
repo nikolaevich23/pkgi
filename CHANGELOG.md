@@ -4,6 +4,17 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ## [Unreleased]()
 
+## [v1.1.8.5](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.5) - 2021-03-05
+
+### Changed
+
+* Добавлена мелодия SND0.AT3 чтобы не было скучно.
+* Пополнена база читов до 476 штук.
+* Пополнена база "Игры на русском" полностью, практически на 99,9% из имеющихся в PSN.
+
+* Особая благодарность 'Serp87' за поддержку и наполнение базы читов.
+* Особая благодарность 'PluSan' и 'max_maysky' за составление базы русских игр!
+
 ## [v1.1.8.4](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.4) - 2021-01-29
 
 ### Changed
@@ -16,7 +27,7 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ### Changed
 
-* Transferring the program to the "Network" menu.
+* Программа перемещена в меню "Network".
 * Добавлена база читов.
 
 ## [v1.1.8.2](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.2) - 2021-01-07
@@ -25,13 +36,13 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ### Fixed
 
-* ??? when defining regions.
+* Исправлено отображение регионов вместо знаков "???".
 
 ## [v1.1.8.1](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.1) - 2020-12-26
 
 ### Changed
 
-* Starting Russian version
+* Стартовая русская версия
 
 ## [v1.1.8](https://github.com/bucanero/pkgi-ps3/releases/tag/v1.1.8) - 2020-12-08
 
