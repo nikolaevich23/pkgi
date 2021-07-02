@@ -1,8 +1,9 @@
 EP0001-UPDWEBMOD_00-0000000000000000,7,webMAN MOD v1.47.36,Manager,,http://github.com/aldostools/webMAN-MOD/releases/download/1.47.36/webMAN_MOD_1.47.36_Installer.pkg,,
-UP0001-BLES80616_00-0000000000000000,7,prepISO_1.28,Addon Webman Mod,,https://github.com/aldostools/webMAN-MOD/releases/download/1.47.36/prepISO_1.28.pkg,,
 EP0001-MANAGUNZ0_00-0000000000000000,7,ManaGunZ v1.40,Manager,,https://github.com/Zarh/ManaGunZ/releases/download/1.40/ManaGunZ_v1.40.pkg,,
 EP0001-FILEMANAG_00-0000000000000000,7,FileManager v1.40,Manager,,https://github.com/Zarh/ManaGunZ/releases/download/1.40/FileManager_v1.40.pkg,,
 UP0001-PS3SFM001_00-0000000000000000,7,Simple file manager v0.5.2,,https://github.com/lmirel/fm_psx/releases/download/v0.5.2/sfm_ps3.pkg,1098800,301f64cc94e9bc442fdac9199bfb8153ac2430a5e47331c6cf8a25b7881648a6
 UP0001-IRISMAN00_00-VER4880000000000,7,IRISMAN 4.88.1,Manager,,https://github.com/aldostools/IRISMAN/releases/download/4.88/IRISMAN_4.88.pkg,28627808,
 UP0001-HTSS00003_00-0000000000000000,8,Movian v5.0.723,APP,,http://movian.deanbg.com/movian-5.0.723-deank-playstation3.pkg,,
 UP0001-NP0APOLLO_00-0000000000000000,8,Apollo PS3 Save Tool v1.6.0,PS3 Cheat Device,,https://github.com/bucanero/apollo-ps3/releases/download/v1.6.0/apollo-ps3.pkg,,
+UP0001-BLES80616_00-0000000000000000,8,prepISO_1.28,Addon Webman Mod,,https://github.com/aldostools/webMAN-MOD/releases/download/1.47.36/prepISO_1.28.pkg,,
+CUSTOM-PS2CONFIG_00-0000000000000000,8,PS2CONFIG_2021-07-01,Addon Webman Mod,,https://github.com/aldostools/webMAN-MOD/releases/download/1.47.36/PS2CONFIG_20210701.pkg,,
