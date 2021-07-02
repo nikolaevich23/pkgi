@@ -104,16 +104,16 @@ UP0001-NP00PKGI3_00-0000000000000000,0,PKGi PS3 v0.1.0,,,http://bucanero.helioho
 
 | Type value |	Content type |
 |------------|--------------|
-| 0	| Unknown
-| 1	| Game
-| 2	| DLC
-| 3	| Theme
-| 4	| Avatar
-| 5	| Demo
-| 6	| Backup Manager
-| 7	| Emulator
-| 8	| Application
-| 9	| Tool
+| 0	| Все
+| 1	| Игры из регионов
+| 2	| Игры на русском
+| 3	| Дополнения DLC
+| 4	| Темы оформления
+| 5	| Аватары
+| 6	| Демо
+| 7	| Менеджеры
+| 8	| Приложения
+| 9	| Читы к играм
 
 ## User-defined DB format
 
