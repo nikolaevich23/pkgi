@@ -56,7 +56,7 @@ Items on each of these files will be auto-categorized to the file content type. 
 
 You can refresh and sync an online database by adding the DB URL(s) to the `config.txt` file in `/dev_hdd0/game/NP00PKGI3/USRDIR`. 
 
-For example:
+Для примера:
 
 ```
 url http://www.mysite.com/mylist.csv
@@ -64,9 +64,12 @@ url_demos http://www.demos.com/otherlist.csv
 url_emulators http://www.example.com/emulators.csv
 ```
 
-Using this setup, `pkgi.txt` will be updated with `mylist.csv`, `pgi_demos.txt` with `otherlist.csv` , and `pkgi_emulators.txt` with `emulators.csv`.
+При настройках в данном примере выше:
+`pkgi.txt` будет обновлён из `mylist.csv`,
+`pgi_demos.txt` будет обновлён из `otherlist.csv`,
+`pkgi_emulators.txt` будет обновлён из `emulators.csv`.
 
-Next time you open the app, you'll have an additional menu option ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png) called **Refresh**. When you select it, the local databases will be syncronized with the defined URLs.
+Когда вы откроете приложение в следующий раз, у вас будет дополнительный пункт меню ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png) под названием **Обновить**. Когда вы выберете его, локальные базы данных будут синхронизированы с определенными URL-адресами.
 
 # DB formats
 
