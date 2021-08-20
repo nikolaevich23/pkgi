@@ -54,7 +54,7 @@ Items on each of these files will be auto-categorized to the file content type. 
 
 ## Online DB update
 
-You can refresh and sync an online database by adding the DB URL(s) to the `config.txt` file in `/dev_hdd0/game/NP00PKGI3/USRDIR`. 
+Вы можете обновить и синхронизировать онлайн-базу данных, добавив БД URL-адреса в файл `config.txt` по пути `/dev_hdd0/game/NP00PKGI3/USRDIR`. 
 
 Для примера:
 
