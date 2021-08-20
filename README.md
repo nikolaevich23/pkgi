@@ -60,13 +60,13 @@ You can refresh and sync an online database by adding the DB URL(s) to the `conf
 
 ```
 url http://www.mysite.com/mylist.csv
-url_demos http://www.demos.com/otherlist.csv
+url_managers http://www.myapp.com/managers.csv
 url_emulators http://www.example.com/emulators.csv
 ```
 
 При настройках в данном примере выше:
 * `pkgi.txt` будет обновлён из `mylist.csv`
-* `pkgi_demos.txt` будет обновлён из `otherlist.csv`
+* `pkgi_managers.txt` будет обновлён из `managers.csv`
 * `pkgi_emulators.txt` будет обновлён из `emulators.csv`
 
 Когда вы откроете приложение в следующий раз, у вас будет дополнительный пункт меню ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png) под названием **Обновить**. Когда вы выберете его, локальные базы данных будут синхронизированы с определенными URL-адресами.
