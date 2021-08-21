@@ -407,6 +407,8 @@ static int matches(GameRegion region, ContentType content, uint32_t filter)
 
         && ((content == ContentGame && (filter & DbFilterContentGame))
         || (content == ContentRUS && (filter & DbFilterContentRUS))
+        || (content == ContentPS2 && (filter & DbFilterContentPS2))
+        || (content == ContentPS1 && (filter & DbFilterContentPS1))
         || (content == ContentDLC && (filter & DbFilterContentDLC))
         || (content == ContentTheme && (filter & DbFilterContentTheme))
         || (content == ContentAvatar && (filter & DbFilterContentAvatar))

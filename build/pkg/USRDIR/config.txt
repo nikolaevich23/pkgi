@@ -1,2 +1,2 @@
-url https://raw.githubusercontent.com/nikolaevich23/pkgi/master/mylist.csv
-url_managers https://raw.githubusercontent.com/nikolaevich23/pkgi/master/managers.csv
+url http://raw.githubusercontent.com/nikolaevich23/pkgi/master/mylist.csv
+url_managers http://raw.githubusercontent.com/nikolaevich23/pkgi/master/managers.csv

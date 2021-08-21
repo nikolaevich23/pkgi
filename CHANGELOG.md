@@ -4,6 +4,18 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ## [Unreleased]()
 
+## [v1.1.8.6](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.6) - 2021-08-21
+
+### Changed
+
+* Добавлена новая категория "Игры PS2 для PS3".
+* Добавлена новая категория "Игры PS1 для PS3".
+* Пополнена база читов до 500 шт.
+* Прочие мелкие правки в коде и пополнения баз игр.
+
+* Особая благодарность 'Serp87' за поддержку и пополнение базы читов.
+* Особая благодарность 'Z0rdan' за старт составления баз PS1 и PS2 игр.
+
 ## [v1.1.8.5](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.5) - 2021-03-05
 
 ### Changed
