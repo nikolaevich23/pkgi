@@ -36,7 +36,7 @@ typedef struct {
 static const MenuEntry menu_entries[] =
 {
     { MenuSearch, "Поиск...", 0 },
-    { MenuSearchClear, PKGI_UTF8_CLEAR " clear", 0 },
+    { MenuSearchClear, PKGI_UTF8_CLEAR " очистить поиск", 0 },
 
     { MenuText, "Сортировка:", 0 },
     { MenuSort, "TitleID", SortByTitle },
