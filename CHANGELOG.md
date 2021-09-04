@@ -2,6 +2,18 @@
 
 All notable changes to the `pkgi-ps3` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.8.7](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.7) - 2021-09-04
+
+### Changed
+
+* В главном меню столбик регионов заменён на тип контента.
+* В окне "Детали", по кнопке [], добавлена информация о регионе и типе контента.
+* Прочие мелкие правки в коде и пополнение баз игр.
+
+* Особая благодарность 'Serp87' за поддержку и пополнение базы читов.
+* Особая благодарность 'Z0rdan' за старт составления баз PS1 и PS2 игр.
+* Особая благодарность 'PluSan' и 'max_maysky' за составление базы русских игр.
+
 ## [v1.1.8.6](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.6) - 2021-08-21
 
 ### Changed
@@ -13,6 +25,7 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 * Особая благодарность 'Serp87' за поддержку и пополнение базы читов.
 * Особая благодарность 'Z0rdan' за старт составления баз PS1 и PS2 игр.
+* Особая благодарность 'PluSan' и 'max_maysky' за составление базы русских игр.
 
 ## [v1.1.8.5](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.5) - 2021-03-05
 

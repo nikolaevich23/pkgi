@@ -234,12 +234,30 @@ static const char* content_type_str(ContentType content)
     default: return "Unknown";
     }
 }
+static const char* content_type_str2(ContentType content)
+{
+    switch (content)
+    {
+    case ContentGame: return "GAM";
+    case ContentRUS: return "RUS";
+    case ContentPS2: return "PS2";
+    case ContentPS1: return "PS1";
+    case ContentDLC: return "DLC";
+    case ContentTheme: return "THM";
+    case ContentAvatar: return "AVA";
+    case ContentDemo: return "DEM";
+    case ContentManager: return "MGR";
+    case ContentApp: return "APP";
+    case ContentCheat: return "CHT";
+    default: return "UNK";
+    }
+}
 
 static void pkgi_do_main(pkgi_input* input)
 {
     int col_titleid = 0;
-    int col_region = col_titleid + pkgi_text_width("PCSE00000") + PKGI_MAIN_COLUMN_PADDING;
-    int col_installed = col_region + pkgi_text_width("USA") + PKGI_MAIN_COLUMN_PADDING;
+    int col_content = col_titleid + pkgi_text_width("PCSE00000") + PKGI_MAIN_COLUMN_PADDING;
+    int col_installed = col_content + pkgi_text_width("RUS") + PKGI_MAIN_COLUMN_PADDING;
     int col_name = col_installed + pkgi_text_width(PKGI_UTF8_INSTALLED) + PKGI_MAIN_COLUMN_PADDING;
 
     uint32_t db_count = pkgi_db_count();
@@ -388,16 +406,10 @@ static void pkgi_do_main(pkgi_input* input)
 
         pkgi_clip_set(0, y, VITA_WIDTH, line_height);
         pkgi_draw_text(col_titleid, y, color, titleid);
-        const char* region;
-        switch (pkgi_get_region(item->content))
-        {
-        case RegionASA: region = "ASA"; break;
-        case RegionEUR: region = "EUR"; break;
-        case RegionJPN: region = "JPN"; break;
-        case RegionUSA: region = "USA"; break;
-        default: region = "???"; break;
-        }
-        pkgi_draw_text(col_region, y, color, region);
+        const char* ct;
+        ct = content_type_str2(item->type);
+        pkgi_draw_text(col_content, y, color, ct);
+
         if (item->presence == PresenceIncomplete)
         {
             pkgi_draw_text(col_installed, y, color, PKGI_UTF8_PARTIAL);
@@ -484,11 +496,22 @@ static void pkgi_do_main(pkgi_input* input)
         DbItem* item = pkgi_db_get(selected_item);
         char item_info[256];
 
-        pkgi_snprintf(item_info, sizeof(item_info), "ID: %s\n\nКонтент: (%s) RAP: (%s) SHA256: (%s)", 
+        const char* region;
+        switch (pkgi_get_region(item->content))
+        {
+        case RegionASA: region = "ASA"; break;
+        case RegionEUR: region = "EUR"; break;
+        case RegionJPN: region = "JPN"; break;
+        case RegionUSA: region = "USA"; break;
+        default: region = "???"; break;
+        }
+
+        pkgi_snprintf(item_info, sizeof(item_info), "ID: %s\nRAP: (%s)       SHA-256: (%s)\nРегион: %s    Контент: %s", 
             item->content,
-            content_type_str(item->type),
             (item->rap ? PKGI_UTF8_CHECK_ON : PKGI_UTF8_CHECK_OFF),
-            (item->digest ? PKGI_UTF8_CHECK_ON : PKGI_UTF8_CHECK_OFF) );
+            (item->digest ? PKGI_UTF8_CHECK_ON : PKGI_UTF8_CHECK_OFF),
+            region,
+            content_type_str(item->type));
 
         pkgi_download_icon(item->content);
         pkgi_dialog_details(item->name, item_info, item->description);
