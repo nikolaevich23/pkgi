@@ -2,7 +2,7 @@
 
 All notable changes to the `pkgi-ps3` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.1.8.7](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.7) - 2021-09-04
+## [v1.1.8.710](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.7) - 2021-09-04
 
 ### Changed
 
