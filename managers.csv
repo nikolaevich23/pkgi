@@ -1,6 +1,6 @@
-EP0001-FILEMANAG_00-0000000000000000,9,FileManager v1.40,File Manager,,http://github.com/Zarh/ManaGunZ/releases/download/1.40/FileManager_v1.40.pkg,0,
-UP0001-IRISMAN00_00-VER4880000000000,9,IRISMAN 4.88.1,Manager,,http://github.com/aldostools/IRISMAN/releases/download/4.88/IRISMAN_4.88.pkg,28627808,
-UP0001-IRISMAN00_00-0000000000000000,9,IRISMAN RUS,Manager Russifier,,http://github.com/nikolaevich23/man/raw/master/IMR.pkg,306256,
-EP0001-MANAGUNZ0_00-0000000000000000,9,ManaGunZ v1.40,Manager,,http://github.com/Zarh/ManaGunZ/releases/download/1.40/ManaGunZ_v1.40.pkg,0,
-UP0001-PS3SFM001_00-0000000000000000,9,Simple file manager v0.5.2,File Manager,,http://github.com/lmirel/fm_psx/releases/download/v0.5.2/sfm_ps3.pkg,1098800,
-EP0001-UPDWEBMOD_00-0000000000000000,9,webMAN MOD v1.47.36,Backup Manager,,http://github.com/aldostools/webMAN-MOD/releases/download/1.47.36/webMAN_MOD_1.47.36_Installer.pkg,0,
+EP0001-FILEMANAG_00-0000000000000000,10,*FileManager v1.40,File Manager,,http://github.com/Zarh/ManaGunZ/releases/download/1.40/FileManager_v1.40.pkg,12171120,FAF680636B18AD0B70AA61F48A78C5E42D6972F795F1B82CC434BE3DDE60F00F
+UP0001-IRISMAN00_00-VER4880000000000,10,*IRISMAN 4.88.1,Manager,,http://github.com/aldostools/IRISMAN/releases/download/4.88/IRISMAN_4.88.pkg,29411984,E6EF607F0002B31BFB148BE4FC9BDBACB4E53110751F0E667C701D40B5290570
+UP0001-IRISMAN00_00-0000000000000000,10,*IRISMAN - Русификатор,Manager Russifier,,http://github.com/nikolaevich23/man/raw/master/IMR.pkg,306256,65CDB96FEBC86116D3BA108714D05D927A4F2C445488F714D572766B764C1379
+EP0001-MANAGUNZ0_00-0000000000000000,10,*ManaGunZ v1.40,Manager,,http://github.com/Zarh/ManaGunZ/releases/download/1.40/ManaGunZ_v1.40.pkg,17563040,CE0E4036903E881C08259FD69E777F6BC9CD24E823B471A7B15C88FDDBB2E330
+UP0001-PS3SFM001_00-0000000000000000,10,*Simple file manager v0.5.2,File Manager,,http://github.com/lmirel/fm_psx/releases/download/v0.5.2/sfm_ps3.pkg,1098800,301F64CC94E9BC442FDAC9199BFB8153AC2430A5E47331C6CF8A25B7881648A6
+EP0001-UPDWEBMOD_00-0000000000000000,10,*webMAN MOD v1.47.36,Backup Manager,,http://github.com/aldostools/webMAN-MOD/releases/download/1.47.36/webMAN_MOD_1.47.36_Installer.pkg,13580448,
