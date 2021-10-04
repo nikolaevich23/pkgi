@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define MAX_CONTENT_TYPES 12
+#define MAX_CONTENT_TYPES 13
 
 typedef enum {
     PresenceUnknown,
@@ -37,16 +37,17 @@ typedef enum {
     DbFilterContentRUS	    = 0x000200,
     DbFilterContentPS2	    = 0x000400,
     DbFilterContentPS1	    = 0x000800,
-    DbFilterContentDLC      = 0x001000,
-    DbFilterContentTheme    = 0x002000,
-    DbFilterContentAvatar   = 0x004000,
-    DbFilterContentDemo     = 0x008000,
-    DbFilterContentManager  = 0x010000,
-    DbFilterContentApp      = 0x020000,
-    DbFilterContentCheat    = 0x040000,
+    DbFilterContentMinis    = 0x001000,
+    DbFilterContentDLC      = 0x002000,
+    DbFilterContentTheme    = 0x004000,
+    DbFilterContentAvatar   = 0x008000,
+    DbFilterContentDemo     = 0x010000,
+    DbFilterContentManager  = 0x020000,
+    DbFilterContentApp      = 0x040000,
+    DbFilterContentCheat    = 0x080000,
 
     DbFilterAllRegions = DbFilterRegionUSA | DbFilterRegionEUR | DbFilterRegionJPN | DbFilterRegionASA,
-    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentPS2 | DbFilterContentPS1 | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp | DbFilterContentCheat,
+    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentPS2 | DbFilterContentPS1 | DbFilterContentMinis | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp | DbFilterContentCheat,
     DbFilterAll = DbFilterAllRegions | DbFilterAllContent | DbFilterInstalled | DbFilterMissing,
 } DbFilter;
 
@@ -56,6 +57,7 @@ typedef enum {
     ContentRUS,
     ContentPS2,
     ContentPS1,
+    ContentMinis,
     ContentDLC,
     ContentTheme,
     ContentAvatar,

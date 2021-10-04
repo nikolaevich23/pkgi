@@ -224,6 +224,7 @@ static const char* content_type_str(ContentType content)
     case ContentRUS: return "RUS";
     case ContentPS2: return "PS2";
     case ContentPS1: return "PS1";
+    case ContentMinis: return "miniS";
     case ContentDLC: return "DLC";
     case ContentTheme: return "Theme";
     case ContentAvatar: return "Avatar";
@@ -242,6 +243,7 @@ static const char* content_type_str2(ContentType content)
     case ContentRUS: return "RUS";
     case ContentPS2: return "PS2";
     case ContentPS1: return "PS1";
+    case ContentMinis: return "MNS";
     case ContentDLC: return "DLC";
     case ContentTheme: return "THM";
     case ContentAvatar: return "AVA";

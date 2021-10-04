@@ -68,6 +68,7 @@ static const MenuEntry content_entries[] =
     { MenuFilter, "Игры на русском", DbFilterContentRUS },
     { MenuFilter, "Игры PS2 для PS3", DbFilterContentPS2 },
     { MenuFilter, "Игры PS1 для PS3", DbFilterContentPS1 },
+    { MenuFilter, "miniS для PS3", DbFilterContentMinis },
     { MenuFilter, "Дополнения DLC", DbFilterContentDLC },
     { MenuFilter, "Темы оформления", DbFilterContentTheme },
     { MenuFilter, "Аватары", DbFilterContentAvatar },

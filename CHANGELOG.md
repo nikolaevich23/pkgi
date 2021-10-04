@@ -2,10 +2,11 @@
 
 All notable changes to the `pkgi-ps3` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.1.8.710](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.7) - 2021-09-04
+## [v1.1.8.712](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.712) - 2021-10-04
 
 ### Changed
 
+* Составлен список miniS и добавлена категория "miniS для PS3".
 * В главном меню столбик регионов заменён на тип контента.
 * В окне "Детали", по кнопке [], добавлена информация о регионе и типе контента.
 * Прочие мелкие правки в коде и пополнение баз игр.

@@ -219,6 +219,7 @@ const char* pkgi_content_tag(ContentType content)
     case ContentRUS: return "_russian";
     case ContentPS2: return "_ps2";
     case ContentPS1: return "_ps1";
+    case ContentMinis: return "_minis";
     case ContentDLC: return "_dlcs";
     case ContentTheme: return "_themes";
     case ContentAvatar: return "_avatars";
