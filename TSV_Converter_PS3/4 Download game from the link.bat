@@ -9,5 +9,6 @@ set /p link=Для скачивания введите ссылку:
 echo.
 echo Скачивание игры: %Link%        please wait...|nhcolor 09
 echo.
-%wget% -c --no-cookies --user-agent="Mozilla/5.0 (PLAYSTATION 3 4.87) AppleWebKit/531.22.8 (KHTML, like Gecko)" %Link%
+set of=%Link:~42,9%.pkg
+%wget% -c --no-cookies --user-agent="Mozilla/5.0 (PLAYSTATION 3 4.88) AppleWebKit/531.22.8 (KHTML, like Gecko)" -O %of% %Link%
 pause
