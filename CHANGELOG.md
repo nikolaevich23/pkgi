@@ -2,6 +2,18 @@
 
 All notable changes to the `pkgi-ps3` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.9.0](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.9.0) - 2021-11-17
+
+### Changed
+
+* Добавлена иконка бэкграунда PIC1.PNG.
+* Пополнена и поправлена база игр.
+
+* Особая благодарность 'PluSan' за облачное хранилище и списков для Themes и miniS.
+* Особая благодарность 'Serp87' за поддержку и пополнение базы читов.
+* Особая благодарность 'Z0rdan' за старт составления баз PS1 и PS2 игр.
+* Особая благодарность 'PluSan' и 'max_maysky' за составление базы русских игр.
+
 ## [v1.1.8.713](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.8.713) - 2021-10-05
 
 ### Changed
