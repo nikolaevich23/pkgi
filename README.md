@@ -3,54 +3,57 @@
 [![Downloads][img_downloads]][pkgi_downloads] [![Release][img_latest]][pkgi_latest] [![License][img_license]][pkgi_license]
 
 
-**PKGi PS3** is a PlayStation 3 port of PSVita [pkgi](https://github.com/mmozeiko/pkgi).
+**PKGi PS3** это порт для PlayStation 3 от PSVita [pkgi](https://github.com/mmozeiko/pkgi).
 
-The `pkgi-ps3` homebrew app allows to download and install `.pkg` files directly on your PS3.
+Хоумбрю приложение `pkgi-ps3` позволяет загружать и устанавливать файлы `.pkg` прямо на вашу PS3.
 
-![image](https://i1.imageban.ru/out/2021/09/17/efe377fdf269402d042b26a34bdce3e3.png)
+![image](https://i5.imageban.ru/out/2021/08/21/82395e1ac4855d8108e23a7c2424a24e.jpg)
 
-**Comments, ideas, suggestions?** You can contact [me](https://github.com/nikolaevich23/) on and on [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
+**Комментарии, идеи, предложения?** Вы можете отписаться [me](https://github.com/nikolaevich23/) всегда в теме [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
 
-# Features
+# Особенности
 
-* **easy to use:** list available downloads, including searching, filtering, and sorting.
-* **standalone:** no PC required, everything happens directly on the PS3.
-* **automatic downloads:** just choose an item, and it will be downloaded by the app to your HDD (`direct mode`) or queued for background download (`background mode`) using the internal Download Manager.
-* **resumes interrupted downloads:** you can stop a download at any time, switch applications, and come back to resume the download later.
-* **content activation:** the app can generate `.rif` files for downloaded content (system must be activated)
+* **лёгок в использовании** список доступных загрузок, включая поиск, фильтрацию и сортировку.
+* **автономный:** ПК не требуется, все происходит прямо на PS3.
+* **автоматические загрузки:** просто выберите элемент, и он будет загружен приложением на ваш жесткий диск (`прямая загрузка`) или поставлен в очередь (`фоновая загрузка`) с помощью внутреннего диспетчера загрузки.
+* **возобновляет прерванные загрузки:** вы можете остановить загрузку в любое время, переключать приложения и вернуться позже, чтобы возобновить загрузку.
+* **активация контента:** приложение может генерировать файлы `.rif` для загруженного контента (система должна быть активирована)
 
-### Notes:
-* **queuing** up multiple downloads is only supported when using `background download` mode.
-* **background download tasks** will only show up after rebooting your PS3.
+### Примечания:
+* **постановка в очередь** загрузка нескольких игр поддерживается только при использовании режима `фоновая загрузка`.
+* **фоновые задачи загрузки** появится только после перезагрузки PS3.
 
-# Download
+# Скачать
 
-Get the [latest version here][pkgi_latest].
+Получить [latest version here][pkgi_latest].
 
-### Changelog
+### Журнал изменений
 
-See the [latest changes here](CHANGELOG.md).
+Смотрите [latest changes here](CHANGELOG.md).
 
-# Setup instructions
+# Инструкция по установке
 
-You need to create a `pkgi.txt` file in `/dev_hdd0/game/NP00PKGI3/USRDIR` that contains the items available for installation.
-The text database format is user customizable. Check [this section](#user-defined-db-format) to learn how to define your own custom db format.
+Вам необходимо создать файл `pkgi.txt` в каталоге `/dev_hdd0/game/NP00PKGI3/USRDIR`, содержащий элементы, доступные для установки.
+Формат текстовой базы данных настраивается пользователем. Проверьте [this section](#user-defined-db-format), чтобы узнать, как определить свой собственный формат базы данных.
 
-## Multiple databases
+## Несколько баз данных
 
-You can also load additional database files:
+Вы можете загружать дополнительные файлы базы данных:
 
-- `pkgi_games.txt`
-- `pkgi_dlcs.txt`
-- `pkgi_themes.txt`
-- `pkgi_avatars.txt`
-- `pkgi_demos.txt`
-- `pkgi_managers.txt`
-- `pkgi_emulators.txt`
 - `pkgi_apps.txt`
-- `pkgi_tools.txt`
+- `pkgi_avatars.txt`
+- `pkgi_cheats.txt`
+- `pkgi_demos.txt`
+- `pkgi_dlcs.txt`
+- `pkgi_games.txt`
+- `pkgi_managers.txt`
+- `pkgi_minis.txt`
+- `pkgi_ps1.txt`
+- `pkgi_ps2.txt`
+- `pkgi_russian.txt`
+- `pkgi_themes.txt`
 
-Items on each of these files will be auto-categorized to the file content type. **Note:** The app assumes that every database file has the same format, as defined in `dbformat.txt`.
+Элементы каждого из этих файлов будут автоматически классифицированы по типу содержимого файла. **Примечание:** Приложение предполагает, что каждый файл базы данных имеет один и тот же формат, как определено в `dbformat.txt`.
 
 ## Online DB update
 
