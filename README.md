@@ -9,7 +9,7 @@
 
 ![image](https://i5.imageban.ru/out/2021/08/21/82395e1ac4855d8108e23a7c2424a24e.jpg)
 
-**Комментарии, идеи, предложения?** Вы можете отписаться [me](https://github.com/nikolaevich23/) всегда в теме [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
+**Комментарии, идеи, предложения?** Вы можете отписаться [me](https://github.com/ErikPshat/) всегда в теме [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
 
 # Особенности
 
@@ -52,6 +52,7 @@
 - `pkgi_ps2.txt`
 - `pkgi_russian.txt`
 - `pkgi_themes.txt`
+- `pkgi_updates.txt`
 
 Элементы каждого из этих файлов будут автоматически классифицированы по типу содержимого файла. **Примечание:** Приложение предполагает, что каждый файл базы данных имеет один и тот же формат, как определено в `dbformat.txt`.
 
@@ -95,13 +96,15 @@ where:
 | `name` | is a string for the item's name.
 | `description` | is a string for the item's description.
 | `rap` | the 16 hex bytes for a RAP file, if needed by the item (`.rap` files will be created on `/dev_hdd0/exdata`). Leave empty to skip the `.rap` file.
-| `url` | is the HTTP/HTTPS URL where to download the `.pkg`.
+| `url` | is the HTTP/HTTPS/FTP/FTPS URL where to download the `.pkg` file.
 | `size` | is the size in bytes of the `.pkg` file, or 0 if unknown.
 | `checksum` | is a SHA256 digest of the `.pkg` file (as 32 hex bytes) to make sure the file is not tampered with. Leave empty to skip the check.
 
 **Note:** `name` and `description` cannot contain newlines or commas.
 
-An example `pkgi.txt` file:
+### Sample DB file
+
+An example `pkgi.txt` file following the `contentid,type,name,description,rap,url,size,checksum` format:
 ```
 EP0000-NP9999999_00-0AB00A00FR000000,0,My PKG Test,A description of my pkg,dac109e963294de6cd6f6faf3f045fe9,http://192.168.1.1/html/mypackage.pkg,2715513,afb545c6e71bd95f77994ab4a659efbb8df32208f601214156ad89b1922e73c3
 UP0001-NP00PKGI3_00-0000000000000000,0,PKGi PS3 v0.1.0,,,http://bucanero.heliohost.org/pkgi.pkg,284848,3dc8de2ed94c0f9efeafa81df9b7d58f8c169e2875133d6d2649a7d477c1ae13
@@ -115,13 +118,15 @@ UP0001-NP00PKGI3_00-0000000000000000,0,PKGi PS3 v0.1.0,,,http://bucanero.helioho
 | 2	| Игры на русском
 | 3	| Игры PS2 для PS3
 | 4	| Игры PS1 для PS3
-| 5	| Дополнения DLC
-| 6	| Темы оформления
-| 7	| Аватары
-| 8	| Демо
-| 9	| Менеджеры
-| 10	| Приложения
-| 11	| Читы к играм
+| 5	| miniS для PS3
+| 6	| Дополнения DLC
+| 7	| Темы оформления
+| 8	| Аватары
+| 9	| Демо
+| 10	| Менеджеры
+| 11	| Приложения
+| 12	| Читы к играм
+| 13	| Обновления
 
 ## User-defined DB format
 
@@ -161,11 +166,12 @@ REGION|TITLE|name|url|rap|contentid|DATE|PKG FILENAME|size|checksum
 
 Using the application is simple and straight-forward: 
 
- - Move **UP/DOWN** to select the item you want to install, and press ![X button](https://github.com/bucanero/pkgi-ps3/raw/master/data/CROSS.png).
+ - Move <kbd>UP</kbd>/<kbd>DOWN</kbd> to select the item you want to download, and press ![X button](https://github.com/bucanero/pkgi-ps3/raw/master/data/CROSS.png).
  - To see the item's details, press ![Square](https://github.com/bucanero/pkgi-ps3/raw/master/data/SQUARE.png).
  - To sort/filter/search press ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png).
 It will open the context menu. Press ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png) again to confirm the new settings, or press ![O button](https://github.com/bucanero/pkgi-ps3/raw/master/data/CIRCLE.png) to cancel any changes.
-- Press left or right trigger buttons **(L1/R1)** to move pages up or down.
+- Press left or right trigger buttons <kbd>L1</kbd>/<kbd>R1</kbd> to move pages up or down.
+- Press <kbd>L2</kbd>/<kbd>R2</kbd> trigger buttons to switch between categories.
 
 ### Notes
 
@@ -203,14 +209,18 @@ You need to have installed:
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
 - [YA2D](https://github.com/bucanero/ya2d_ps3) library (an extended version from my repo)
-- [PolarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
+- [PolarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library (v1.3.9)
+- [libcurl](https://github.com/bucanero/ps3libraries/blob/master/scripts/016-libcurl-7.64.1.sh) library (v7.64.1)
 - [MikMod](https://github.com/ps3dev/ps3libraries/blob/master/scripts/011-libmikmod-3.1.11.sh) library
+- [Mini18n](https://github.com/bucanero/mini18n) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
 
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
 
 You can also set the environment variable `PS3LOAD=tcp:x.x.x.x` to the PS3's IP address;
-that will allow you to use `make run` and send `pkgi-ps3.self` directly to the PS3Load listener.
+that will allow you to use `make run` and send `pkgi-ps3.self` directly to the [PS3LoadX listener](https://github.com/bucanero/ps3loadx).
+
+## Debugging
 
 To enable debug logging, build PKGi PS3 with `make DEBUGLOG=1`. The application will send debug messages to
 UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat][] on your PC:
@@ -223,9 +233,9 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 [PSDLE]: https://repod.github.io/psdle/
 [socat]: http://www.dest-unreach.org/socat/
-[pkgi_downloads]: https://github.com/nikolaevich23/pkgi/releases
-[pkgi_latest]: https://github.com/nikolaevich23/pkgi/releases/latest
-[pkgi_license]: https://github.com/nikolaevich23/pkgi/blob/master/LICENSE
-[img_downloads]: https://img.shields.io/github/downloads/nikolaevich23/pkgi/total.svg?maxAge=3600
-[img_latest]: https://img.shields.io/github/release/nikolaevich23/pkgi.svg?maxAge=3600
-[img_license]: https://img.shields.io/github/license/nikolaevich23/pkgi.svg?maxAge=2592000
+[pkgi_downloads]: https://github.com/ErikPshat/pkgi/releases
+[pkgi_latest]: https://github.com/ErikPshat/pkgi/releases/latest
+[pkgi_license]: https://github.com/ErikPshat/pkgi/blob/master/LICENSE
+[img_downloads]: https://img.shields.io/github/downloads/ErikPshat/pkgi/total.svg?maxAge=3600
+[img_latest]: https://img.shields.io/github/release/ErikPshat/pkgi.svg?maxAge=3600
+[img_license]: https://img.shields.io/github/license/ErikPshat/pkgi.svg?maxAge=2592000
