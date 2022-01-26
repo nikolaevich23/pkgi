@@ -9,7 +9,7 @@
 
 ![image](https://i2.imageban.ru/out/2022/01/26/c1526240ce6a0f3d5a6ac9bfdd22969f.jpg)
 
-**Комментарии, идеи, предложения?** Вы можете отписаться [me](https://github.com/ErikPshat/) всегда в теме [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
+**Комментарии, идеи, предложения?** Вы можете отписаться [me](https://github.com/nikolaevich23/) всегда в теме [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
 
 # Особенности
 
