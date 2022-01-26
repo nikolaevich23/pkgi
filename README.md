@@ -25,11 +25,11 @@
 
 # Скачать
 
-Получить [latest version here][pkgi_latest].
+Получить [последнюю версию здесь](pkgi_latest).
 
 ### Журнал изменений
 
-Смотрите [latest changes here](CHANGELOG.md).
+Смотрите [последние изменения здесь](CHANGELOG.md).
 
 # Инструкция по установке
 
