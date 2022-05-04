@@ -5,7 +5,7 @@
 #include "pkgi_dialog.h"
 
 #define PKGI_UPDATE_URL     "http://api.github.com/repos/nikolaevich23/pkgi/releases/latest"
-#define PKGI_VERSION        "1.1.9.220414"
+#define PKGI_VERSION        "1.1.9.220504"
 
 #define PKGI_BUTTON_SELECT 0x00010000
 #define PKGI_BUTTON_START  0x00080000
