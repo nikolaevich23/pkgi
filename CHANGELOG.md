@@ -2,17 +2,48 @@
 
 All notable changes to the `pkgi-ps3` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.1.9.1](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.9.1) - 2021-11-28
+## [v1.2.3.220726](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.3.220726) - 2022-07-26
 
-### Changed
+* Добавлена проверка на активацию, если система не активирована выдаст предупреждение и внизу будет писать, что система не активирована. Если активирована - внизу будет информация  на каком пользователе активация.
 
-* Исправлена ссылка на менеджер IRISMAN RUS 4.88.
-* Пополнена и поправлена база игр.
+## [v1.2.2.220701](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.2.220701) - 2022-07-01
 
-* Особая благодарность 'PluSan' за облачное хранилище и списков для Themes и miniS.
-* Особая благодарность 'Serp87' за поддержку и пополнение базы читов.
-* Особая благодарность 'Z0rdan' за старт составления баз PS1 и PS2 игр.
-* Особая благодарность 'PluSan' и 'max_maysky' за составление базы русских игр.
+*  Убрана проверка на установленную игру по title id (ибо при установке показывало, что установлены и другие компоненты, хотя вы их не качали)
+
+## [v1.2.2.1](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.2.1) - 2021-11-30
+
+### Added
+
+* Русский перевод
+
+## [v1.2.2](https://github.com/bucanero/pkgi-ps3/releases/tag/v1.2.2) - 2021-10-22
+
+### Added
+
+* Перенос всего сетевого кода в libcurl
+* Поддержка ссылок HTTP, HTTPS, FTP, FTPS с TLS v1.2
+* Финский перевод
+* Французский перевод
+* Немецкий перевод
+* Итальянский перевод
+* Польский перевод
+* Португальский перевод
+* Турецкий перевод
+
+### Fixed
+
+* Crash when item list is empty
+
+## [v1.2.0](https://github.com/bucanero/pkgi-ps3/releases/tag/v1.2.0) - 2021-10-09
+
+### Added
+
+* Мультиязыковая поддержка
+* Определение языка на основе настроек PS3
+* Испанский перевод
+* Онлайн-сканирование доступных обновлений контента
+* Поддержка TLS v1.2 с использованием более новой версии libcurl + polarSSL
+* UI: использование настраиваемых диалогов
 
 ## [v1.1.9.0](https://github.com/nikolaevich23/pkgi/releases/tag/v1.1.9.0) - 2021-11-17
 
@@ -119,7 +150,7 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ### Added
 
-* Generate .rif files when downloading items (system must be activated)
+* Generate `.rif` files when downloading items (system must be activated)
 * Improved speed when creating empty files in background download mode
 * Enter button detection (`cross`/`circle`)
 
