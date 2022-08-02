@@ -2,6 +2,9 @@
 
 All notable changes to the `pkgi-ps3` project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.3.220802](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.3.220802) - 2022-08-02
+* Добавлен QR-код в сообщение о необходимости активации для быстрого перехода в тему
+
 ## [v1.2.3.220726](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.3.220726) - 2022-07-26
 
 * Добавлена проверка на активацию, если система не активирована выдаст предупреждение и внизу будет писать, что система не активирована. Если активирована - внизу будет информация  на каком пользователе активация.
