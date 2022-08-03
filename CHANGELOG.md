@@ -4,6 +4,7 @@ All notable changes to the `pkgi-ps3` project will be documented in this file. T
 
 ## [v1.2.3.220802](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.3.220802) - 2022-08-02
 * Добавлен QR-код в сообщение о необходимости активации для быстрого перехода в тему
+* Музыка по умолчанию выключена.
 
 ## [v1.2.3.220726](https://github.com/ErikPshat/pkgi/releases/tag/v1.2.3.220726) - 2022-07-26
 
