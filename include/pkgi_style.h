@@ -17,9 +17,9 @@
 #define PKGI_UTF8_PARTIAL   "\x09" //"\xe2\x97\x8b" // 0x25cb
 
 #define PKGI_UTF8_B  "¡"
-#define PKGI_UTF8_KB " ·" // "\xe3\x8e\x85" // 0x3385
-#define PKGI_UTF8_MB "Ã·" // "\xe3\x8e\x86" // 0x3386
-#define PKGI_UTF8_GB "√·" // "\xe3\x8e\x87" // 0x3387
+#define PKGI_UTF8_KB " ¡" // "\xe3\x8e\x85" // 0x3385
+#define PKGI_UTF8_MB "Ã¡" // "\xe3\x8e\x86" // 0x3386
+#define PKGI_UTF8_GB "√¡" // "\xe3\x8e\x87" // 0x3387
 
 #define PKGI_UTF8_CLEAR "\xaf" // 0x00d7
 
@@ -68,7 +68,7 @@
 #define PKGI_DIALOG_HMARGIN 100
 #define PKGI_DIALOG_VMARGIN 150
 #define PKGI_DIALOG_PADDING 30
-#define PKGI_DIALOG_WIDTH (VITA_WIDTH - 2*PKGI_DIALOG_HMARGIN)
+#define PKGI_DIALOG_WIDTH (VITA_WIDTH - 2*PKGI_DIALOG_HMARGIN+80)
 #define PKGI_DIALOG_HEIGHT (VITA_HEIGHT - 2*PKGI_DIALOG_VMARGIN)
 
 #define PKGI_DIALOG_PROCESS_BAR_HEIGHT  10

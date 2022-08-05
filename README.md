@@ -7,9 +7,9 @@
 
 Хоумбрю приложение `pkgi-ps3` позволяет загружать и устанавливать файлы `.pkg` прямо на вашу PS3.
 
-![image](https://i2.imageban.ru/out/2022/01/26/c1526240ce6a0f3d5a6ac9bfdd22969f.jpg)
+![image](https://i1.imageban.ru/out/2022/01/26/80fde7eb02403f724cb8d305d683d2e9.jpg)
 
-**Комментарии, идеи, предложения?** Вы можете отписаться [me](https://github.com/nikolaevich23/) всегда в теме [my website](https://www.pspx.ru/forum/showthread.php?t=110158).
+**Комментарии, идеи, предложения?** Вы можете отписаться [мне](https://github.com/ErikPshat/) всегда в теме [на форуме](https://www.pspx.ru/forum/showthread.php?t=110158).
 
 # Особенности
 
@@ -34,7 +34,7 @@
 # Инструкция по установке
 
 Вам необходимо создать файл `pkgi.txt` в каталоге `/dev_hdd0/game/NP00PKGI3/USRDIR`, содержащий элементы, доступные для установки.
-Формат текстовой базы данных настраивается пользователем. Проверьте [this section](#user-defined-db-format), чтобы узнать, как определить свой собственный формат базы данных.
+Формат текстовой базы данных настраивается пользователем. Проверьте [эту секцию](#user-defined-db-format), чтобы узнать, как определить свой собственный формат базы данных.
 
 ## Несколько баз данных
 
@@ -52,6 +52,7 @@
 - `pkgi_ps2.txt`
 - `pkgi_russian.txt`
 - `pkgi_themes.txt`
+- `pkgi_updates.txt`
 
 Элементы каждого из этих файлов будут автоматически классифицированы по типу содержимого файла. **Примечание:** Приложение предполагает, что каждый файл базы данных имеет один и тот же формат, как определено в `dbformat.txt`.
 
@@ -207,7 +208,7 @@ You need to have installed:
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
-- [YA2D](https://github.com/bucanero/ya2d_ps3) library (an extended version from my repo)
+- [YA2D](https://github.com/ErikPshat/pkgi/tree/master/ya2d_ps3) library (an extended version from my repo)
 - [PolarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library (v1.3.9)
 - [libcurl](https://github.com/bucanero/ps3libraries/blob/master/scripts/016-libcurl-7.64.1.sh) library (v7.64.1)
 - [MikMod](https://github.com/ps3dev/ps3libraries/blob/master/scripts/011-libmikmod-3.1.11.sh) library

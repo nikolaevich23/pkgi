@@ -1,3 +1,4 @@
+#include <mini18n.h>
 #include "pkgi_menu.h"
 #include "pkgi_config.h"
 #include "pkgi_style.h"
@@ -33,49 +34,50 @@ typedef struct {
     uint32_t value;
 } MenuEntry;
 
-static const MenuEntry menu_entries[] =
+static MenuEntry menu_entries[] =
 {
-    { MenuSearch, "Поиск...", 0 },
-    { MenuSearchClear, PKGI_UTF8_CLEAR " очистить поиск", 0 },
+    { MenuSearch, "Search...", 0 },
+    { MenuSearchClear, PKGI_UTF8_CLEAR " c6poc noucka", 0 },
 
-    { MenuText, "Сортировка:", 0 },
-    { MenuSort, "TitleID", SortByTitle },
-    { MenuSort, "Регион", SortByRegion },
-    { MenuSort, "Название", SortByName },
-    { MenuSort, "Размер", SortBySize },
+    { MenuText, "Sort by:", 0 },
+    { MenuSort, "Title", SortByTitle },
+    { MenuSort, "Region", SortByRegion },
+    { MenuSort, "Name", SortByName },
+    { MenuSort, "Size", SortBySize },
 
-    { MenuText, "Контент:", 0 },
-    { MenuContent, "Все", 0 },
+    { MenuText, "Content:", 0 },
+    { MenuContent, "All", 0 },
 
-    { MenuText, "Регионы:", 0 },
-    { MenuFilter, "Азия", DbFilterRegionASA },
-    { MenuFilter, "Европа", DbFilterRegionEUR },
-    { MenuFilter, "Япония", DbFilterRegionJPN },
-    { MenuFilter, "Америка", DbFilterRegionUSA },
+    { MenuText, "Regions:", 0 },
+    { MenuFilter, "Asia", DbFilterRegionASA },
+    { MenuFilter, "Europe", DbFilterRegionEUR },
+    { MenuFilter, "Japan", DbFilterRegionJPN },
+    { MenuFilter, "USA", DbFilterRegionUSA },
 
-    { MenuText, "Параметры:", 0 },
-    { MenuMode, "Фоновая загрузка", 1 },
-    { MenuMusic, "Мелодия §", 1 },
-    { MenuUpdate, "Обновление", 1 },
+    { MenuText, "Options:", 0 },
+    { MenuMode, "Back. DL", 1 },
+    { MenuMusic, "Music", 1 },
+    { MenuUpdate, "Updates", 1 },
 
-    { MenuRefresh, "Обновить базу...", 0 },
+    { MenuRefresh, "Refresh...", 0 },
 };
 
-static const MenuEntry content_entries[] = 
+static MenuEntry content_entries[] = 
 {
-    { MenuFilter, "Все", DbFilterAllContent },
-    { MenuFilter, "Игры из регионов", DbFilterContentGame },
-    { MenuFilter, "Игры на русском", DbFilterContentRUS },
-    { MenuFilter, "Игры PS2 для PS3", DbFilterContentPS2 },
-    { MenuFilter, "Игры PS1 для PS3", DbFilterContentPS1 },
-    { MenuFilter, "miniS для PS3", DbFilterContentMinis },
-    { MenuFilter, "Дополнения DLC", DbFilterContentDLC },
-    { MenuFilter, "Темы оформления", DbFilterContentTheme },
-    { MenuFilter, "Аватары", DbFilterContentAvatar },
-    { MenuFilter, "Демо", DbFilterContentDemo },
-    { MenuFilter, "Менеджеры", DbFilterContentManager },
-    { MenuFilter, "Приложения", DbFilterContentApp },
-    { MenuFilter, "Читы к играм", DbFilterContentCheat },
+	{ MenuFilter, "All", DbFilterAllContent },
+	{ MenuFilter, "Games", DbFilterContentGame },
+	{ MenuFilter, "RUS", DbFilterContentRUS },
+	{ MenuFilter, "PS2", DbFilterContentPS2 },
+	{ MenuFilter, "PS1", DbFilterContentPS1 },
+	{ MenuFilter, "miniS", DbFilterContentMinis },
+	{ MenuFilter, "DLCs", DbFilterContentDLC },
+	{ MenuFilter, "Themes", DbFilterContentTheme },
+	{ MenuFilter, "Avatars", DbFilterContentAvatar },
+	{ MenuFilter, "Demos", DbFilterContentDemo },
+	{ MenuFilter, "Managers", DbFilterContentManager },
+	{ MenuFilter, "Apps", DbFilterContentApp },
+	{ MenuFilter, "Cheats", DbFilterContentCheat },
+	{ MenuFilter, "Updates", DbFilterContentUpdate }
 };
 
 int pkgi_menu_is_open(void)
@@ -100,6 +102,40 @@ void pkgi_menu_start(int search_clear, const Config* config)
     menu_delta = 1;
     menu_config = *config;
     menu_allow_refresh = config->allow_refresh;
+
+    menu_entries[0].text = _("Search...");
+    menu_entries[2].text = _("Sort by:");
+    menu_entries[3].text = _("Title");
+    menu_entries[4].text = _("Region");
+    menu_entries[5].text = _("Name");
+    menu_entries[6].text = _("Size");
+    menu_entries[7].text = _("Content:");
+    menu_entries[8].text = _("All");
+    menu_entries[9].text = _("Regions:");
+    menu_entries[10].text = _("Asia");
+    menu_entries[11].text = _("Europe");
+    menu_entries[12].text = _("Japan");
+    menu_entries[13].text = _("USA");
+    menu_entries[14].text = _("Options:");
+    menu_entries[15].text = _("Back. DL");
+    menu_entries[16].text = _("Music");
+    menu_entries[17].text = _("Updates");
+    menu_entries[18].text = _("Refresh...");
+
+    content_entries[0].text = _("All");
+    content_entries[1].text = _("Games");
+    content_entries[2].text = _("RUS");
+    content_entries[3].text = _("PS2");
+    content_entries[4].text = _("PS1");
+    content_entries[5].text = _("miniS");
+    content_entries[6].text = _("DLCs");
+    content_entries[7].text = _("Themes");
+    content_entries[8].text = _("Avatars");
+    content_entries[9].text = _("Demos");
+    content_entries[10].text = _("Managers");
+    content_entries[11].text = _("Apps");
+    content_entries[12].text = _("Cheats");
+    content_entries[13].text = _("Updates");
 }
 
 int pkgi_do_menu(pkgi_input* input)
@@ -295,7 +331,7 @@ int pkgi_do_menu(pkgi_input* input)
         else if (type == MenuMode)
         {
             pkgi_snprintf(text, sizeof(text), PKGI_UTF8_CLEAR " %s",
-                menu_config.dl_mode_background == entry->value ? entry->text : "Прямая загрузка");            
+                menu_config.dl_mode_background == entry->value ? entry->text : _("Direct DL"));
         }
         else if (type == MenuMusic)
         {

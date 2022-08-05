@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include "pkgi_dialog.h"
 
-#define PKGI_UPDATE_URL     "http://api.github.com/repos/nikolaevich23/pkgi/releases/latest"
-#define PKGI_VERSION        "1.1.9.220701"
+#define PKGI_UPDATE_URL     "https://api.github.com/repos/ErikPshat/pkgi/releases/latest"
+#define PKGI_VERSION        "1.2.3.220802"
 
 #define PKGI_BUTTON_SELECT 0x00010000
 #define PKGI_BUTTON_START  0x00080000
@@ -76,6 +76,7 @@ const char* pkgi_get_temp_folder(void);
 const char* pkgi_get_app_folder(void);
 int pkgi_is_incomplete(const char* titleid);
 int pkgi_is_installed(const char* titleid);
+int chk_act_dat();
 int pkgi_install(const char* titleid);
 
 uint32_t pkgi_time_msec();
@@ -105,7 +106,7 @@ typedef struct pkgi_http pkgi_http;
 int pkgi_validate_url(const char* url);
 pkgi_http* pkgi_http_get(const char* url, const char* content, uint64_t offset);
 int pkgi_http_response_length(pkgi_http* http, int64_t* length);
-int pkgi_http_read(pkgi_http* http, void* buffer, uint32_t size);
+int pkgi_http_read(pkgi_http* http, void* write_func, void* xferinfo_func);
 void pkgi_http_close(pkgi_http* http);
 
 int pkgi_mkdirs(const char* path);

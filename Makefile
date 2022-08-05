@@ -13,7 +13,7 @@ endif
 TITLE		:=	PKGi PS3 RUS MOD
 APPID		:=	NP00PKGI3
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
-ICON0		:=	ICON0.PNG
+ICON0		:=	pkgfiles/ICON0.PNG
 SFOXML		:=	sfo.xml
 
 include $(PSL1GHT)/ppu_rules
@@ -33,13 +33,13 @@ SOURCES		:=	source
 DATA		:=	data
 SHADERS		:=	shaders
 INCLUDES	:=	include
-
+PKGFILES	:=	pkgfiles
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-lya2d -lfont3d -ltiny3d -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lpngdec -lsysmodule -lm -lsysfs  -ljpgdec -ldbglogger \
-				-lnet -lhttp -lhttputil -lssl -lfreetype -lz -lmikmod -laudio -lpolarssl
+LIBS		:=	-lcurl -lxml2 -lya2d -lfont3d -ltiny3d -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lpngdec -lsysmodule -lm -lsysfs  -ljpgdec -ldbglogger \
+				-lnet -lhttputil -lfreetype -lz -lmikmod -laudio -lpolarssl -lmini18n -ljson-c
 
 
 #---------------------------------------------------------------------------------
@@ -109,6 +109,8 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					$(LIBPSL1GHT_INC) \
+					-I$(PORTLIBS)/include/freetype2 \
+					-I$(PORTLIBS)/include/libxml2 \
 					-I$(CURDIR)/$(BUILD) -I$(PORTLIBS)/include
 
 #---------------------------------------------------------------------------------
@@ -129,7 +131,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).self $(OUTPUT).fake.self EBOOT.BIN
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).self $(OUTPUT).fake.self  EBOOT.BIN
 
 #---------------------------------------------------------------------------------
 run:
@@ -144,6 +146,12 @@ npdrm: $(BUILD)
 	@$(SELF_NPDRM) $(SCETOOL_FLAGS) --np-content-id=$(CONTENTID) --encrypt $(BUILDDIR)/$(basename $(notdir $(OUTPUT))).elf $(BUILDDIR)/../EBOOT.BIN
 
 #---------------------------------------------------------------------------------
+
+quickpkg:
+	$(VERB) if [ -n "$(PKGFILES)" -a -d "$(PKGFILES)" ]; then cp -rf $(PKGFILES)/* $(BUILDDIR)/pkg/; fi
+	$(VERB) $(PKG) --contentid $(CONTENTID) $(BUILDDIR)/pkg/ $(TARGET).pkg >> /dev/null
+	$(VERB) cp $(TARGET).pkg $(TARGET).gnpdrm.pkg
+	$(VERB) $(PACKAGE_FINALIZE) $(TARGET).gnpdrm.pkg
 
 else
 

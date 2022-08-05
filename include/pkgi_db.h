@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define MAX_CONTENT_TYPES 13
+#define MAX_CONTENT_TYPES 14
 
 typedef enum {
     PresenceUnknown,
@@ -45,9 +45,10 @@ typedef enum {
     DbFilterContentManager  = 0x020000,
     DbFilterContentApp      = 0x040000,
     DbFilterContentCheat    = 0x080000,
+    DbFilterContentUpdate   = 0x100000,
 
     DbFilterAllRegions = DbFilterRegionUSA | DbFilterRegionEUR | DbFilterRegionJPN | DbFilterRegionASA,
-    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentPS2 | DbFilterContentPS1 | DbFilterContentMinis | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp | DbFilterContentCheat,
+    DbFilterAllContent = DbFilterContentGame | DbFilterContentRUS | DbFilterContentPS2 | DbFilterContentPS1 | DbFilterContentMinis | DbFilterContentDLC | DbFilterContentTheme | DbFilterContentAvatar | DbFilterContentDemo | DbFilterContentManager | DbFilterContentApp | DbFilterContentCheat | DbFilterContentUpdate,
     DbFilterAll = DbFilterAllRegions | DbFilterAllContent | DbFilterInstalled | DbFilterMissing,
 } DbFilter;
 
@@ -65,6 +66,7 @@ typedef enum {
     ContentManager,
     ContentApp,
     ContentCheat,
+    ContentUpdate,
 } ContentType;
 
 typedef struct {
@@ -96,12 +98,14 @@ typedef struct Config {
     uint8_t dl_mode_background;
     uint8_t music;
     uint8_t allow_refresh;
+    char language[3];
 } Config;
 
 
 int pkgi_db_reload(char* error, uint32_t error_size);
 int pkgi_db_update(const char* update_url, uint32_t update_len, char* error, uint32_t error_size);
 void pkgi_db_get_update_status(uint32_t* updated, uint32_t* total);
+int pkgi_db_load_xml_updates(const char* content_id, const char* name);
 
 void pkgi_db_configure(const char* search, const Config* config);
 

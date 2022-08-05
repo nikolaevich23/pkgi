@@ -117,6 +117,7 @@ void pkgi_load_config(Config* config, char* refresh_url, uint32_t refresh_len)
     config->music = 1;
     config->content = 0;
     config->allow_refresh = 0;
+    pkgi_strncpy(config->language, 3, pkgi_get_user_language());
 
     char data[4096];
     char path[256];
@@ -195,11 +196,15 @@ void pkgi_load_config(Config* config, char* refresh_url, uint32_t refresh_len)
             {
                 config->content = (uint8_t)pkgi_strtoll(value);
             }
+            else if (pkgi_stricmp(key, "language") == 0)
+            {
+                pkgi_strncpy(config->language, 2, value);
+            }
         }
     }
     else
     {
-        LOG("config.txt не может быть загружен со значени€ми по умолчанию");
+        LOG("config.txt cannot be loaded, using default values");
     }
     if (config->content == 0)
     {
@@ -227,6 +232,7 @@ const char* pkgi_content_tag(ContentType content)
     case ContentManager: return "_managers";
     case ContentApp: return "_apps";
     case ContentCheat: return "_cheats";
+    case ContentUpdate: return "_updates";
     default: return "";
     }
 }
@@ -266,6 +272,7 @@ void pkgi_save_config(const Config* config, const char* update_url, uint32_t upd
             len += pkgi_snprintf(data + len, sizeof(data) - len, "url%s %s\n", pkgi_content_tag(i), tmp_url);
         }
     }
+    len += pkgi_snprintf(data + len, sizeof(data) - len, "language %s\n", config->language);
     len += pkgi_snprintf(data + len, sizeof(data) - len, "content %d\n", config->content);
     len += pkgi_snprintf(data + len, sizeof(data) - len, "sort %s\n", sort_str(config->sort));
     len += pkgi_snprintf(data + len, sizeof(data) - len, "order %s\n", order_str(config->order));
@@ -313,10 +320,10 @@ void pkgi_save_config(const Config* config, const char* update_url, uint32_t upd
 
     if (pkgi_save(path, data, len))
     {
-        LOG("config.txt сохранЄн");
+        LOG("saved config.txt");
     }
     else
     {
-        LOG("Ќе удалось сохранить config.txt");
+        LOG("cannot save config.txt");
     }
 }

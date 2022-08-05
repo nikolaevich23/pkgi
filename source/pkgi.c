@@ -6,9 +6,12 @@
 #include "pkgi_download.h"
 #include "pkgi_utils.h"
 #include "pkgi_style.h"
-#include "pkgi_utf8.h"
+#include "pkgi_sha256.h"
 
 #include <stddef.h>
+#include <mini18n.h>
+#include <json/json.h>
+
 
 #define content_filter(c)   (c ? 1 << (7 + c) : DbFilterAllContent)
 
@@ -76,8 +79,8 @@ static void pkgi_refresh_thread(void)
 
 static int install(const char* content)
 {
-    LOG("Установка...");
-    pkgi_dialog_start_progress("Установка", "Пожалуйста подождите...", -1);
+    LOG("installing...");
+    pkgi_dialog_start_progress(_("Installing"), _("Please wait..."), -1);
 
     char titleid[10];
     pkgi_memcpy(titleid, content + 7, 9);
@@ -89,11 +92,11 @@ static int install(const char* content)
 
     if (!ok)
     {
-        pkgi_dialog_error("Установка не удалась");
+        pkgi_dialog_error(_("Installation failed"));
         return 0;
     }
 
-    LOG("Установка выполнена успешно");
+    LOG("install succeeded");
 
     return 1;
 }
@@ -102,9 +105,9 @@ static void pkgi_download_thread(void)
 {
     DbItem* item = pkgi_db_get(selected_item);
 
-    LOG("Старт потока загрузки");
+    LOG("download thread start");
 
-    // короткая задержка для плавной анимации диалогового окна загрузки
+    // short delay to allow download dialog to animate smoothly
     pkgi_sleep(300);
 
     pkgi_lock_process();
@@ -113,13 +116,13 @@ static void pkgi_download_thread(void)
         if (!config.dl_mode_background)
         {
             install(item->content);
-            pkgi_dialog_message(item->name, "Загрузка завершена!");
+            pkgi_dialog_message(item->name, _("Successfully downloaded"));
         }
         else
         {
-            pkgi_dialog_message(item->name, "Задача добавлена в очередь (старт после перезагрузки)");
+            pkgi_dialog_message(item->name, _("Task successfully queued (reboot to start)"));
         }
-        LOG("Загрузка завершена!");
+        LOG("download completed!");
     }
     pkgi_unlock_process();
 
@@ -158,19 +161,19 @@ static const char* friendly_size_str(uint64_t size)
 {
     if (size > 10ULL * 1000 * 1024 * 1024)
     {
-        return "Гб";
+        return _("GB");
     }
     else if (size > 10 * 1000 * 1024)
     {
-        return "Мб";
+        return _("MB");
     }
     else if (size > 10 * 1000)
     {
-        return "Кб";
+        return _("KB");
     }
     else
     {
-        return "Б";
+        return _("B");
     }
 }
 
@@ -180,7 +183,7 @@ int pkgi_check_free_space(uint64_t size)
     if (size > free + 1024 * 1024)
     {
         char error[256];
-        pkgi_snprintf(error, sizeof(error), "Требуется %u %s свободного места, доступно %u %s",
+        pkgi_snprintf(error, sizeof(error), _("pkg requires %u %s free space, but only %u %s available"),
             friendly_size(size), friendly_size_str(size),
             friendly_size(free), friendly_size_str(free)
         );
@@ -220,62 +223,61 @@ static const char* content_type_str(ContentType content)
 {
     switch (content)
     {
-    case ContentGame: return "Game";
-    case ContentRUS: return "RUS";
-    case ContentPS2: return "PS2";
-    case ContentPS1: return "PS1";
-    case ContentMinis: return "miniS";
-    case ContentDLC: return "DLC";
-    case ContentTheme: return "Theme";
-    case ContentAvatar: return "Avatar";
-    case ContentDemo: return "Demo";
-    case ContentManager: return "Manager";
-    case ContentApp: return "App";
-    case ContentCheat: return "Cheat";
-    default: return "Unknown";
+		case 0: return _("All");
+		case ContentGame: return _("Games");
+		case ContentRUS: return _("RUS");
+		case ContentPS2: return _("PS2");
+		case ContentPS1: return _("PS1");
+		case ContentMinis: return _("miniS");
+		case ContentDLC: return _("DLCs");
+		case ContentTheme: return _("Themes");
+		case ContentAvatar: return _("Avatars");
+		case ContentDemo: return _("Demos");
+		case ContentManager: return _("Managers");
+		case ContentApp: return _("Apps");
+		case ContentCheat: return _("Cheats");
+		case ContentUpdate: return _("Updates");
+		default: return _("Unknown");
     }
 }
-static const char* content_type_str2(ContentType content)
+
+void cb_dialog_exit(int res)
 {
-    switch (content)
-    {
-    case ContentGame: return "GAM";
-    case ContentRUS: return "RUS";
-    case ContentPS2: return "PS2";
-    case ContentPS1: return "PS1";
-    case ContentMinis: return "MNS";
-    case ContentDLC: return "DLC";
-    case ContentTheme: return "THM";
-    case ContentAvatar: return "AVA";
-    case ContentDemo: return "DEM";
-    case ContentManager: return "MGR";
-    case ContentApp: return "APP";
-    case ContentCheat: return "CHT";
-    default: return "UNK";
-    }
+    state = StateTerminate;
+}
+
+void cb_dialog_download(int res)
+{
+    DbItem* item = pkgi_db_get(selected_item);
+
+    item->presence = PresenceMissing;
+    pkgi_dialog_start_progress(_("РЎРєР°С‡РёРІР°РЅРёРµ..."), _("РџРѕРґРіРѕС‚РѕРІРєР°..."), 0);
+    pkgi_start_thread("download_thread", &pkgi_download_thread);
 }
 
 static void pkgi_do_main(pkgi_input* input)
 {
     int col_titleid = 0;
-    int col_content = col_titleid + pkgi_text_width("PCSE00000") + PKGI_MAIN_COLUMN_PADDING;
-    int col_installed = col_content + pkgi_text_width("RUS") + PKGI_MAIN_COLUMN_PADDING;
+    int col_region = col_titleid + pkgi_text_width("PCSE00000") + PKGI_MAIN_COLUMN_PADDING;
+    int col_installed = col_region + pkgi_text_width("USA") + PKGI_MAIN_COLUMN_PADDING;
     int col_name = col_installed + pkgi_text_width(PKGI_UTF8_INSTALLED) + PKGI_MAIN_COLUMN_PADDING;
 
     uint32_t db_count = pkgi_db_count();
     
     if (input)
     {
-        if (input->active & pkgi_cancel_button()) {
+        if (input->active & pkgi_cancel_button())
+        {
             input->pressed &= ~pkgi_cancel_button();
-            if (pkgi_msg_dialog(MDIALOG_YESNO, MEXIT))
-                state = StateTerminate;
+            pkgi_dialog_ok_cancel("\xE2\x98\x85  PKGi PS3 RUS MOD v" PKGI_VERSION "  \xE2\x98\x85", _("Exit to XMB?"), &cb_dialog_exit);
         }
 
-        if (input->active & PKGI_BUTTON_SELECT) {
+        if (input->active & PKGI_BUTTON_SELECT)
+        {
             input->pressed &= ~PKGI_BUTTON_SELECT;
-
-            pkgi_msg_dialog(MDIALOG_OK, M1ABOUT PKGI_VERSION M2ABOUT);
+            pkgi_dialog_message("\xE2\x98\x85  PKGi PS3 RUS MOD v" PKGI_VERSION "  \xE2\x98\x85",
+                                "             PlayStation 3 version by Bucanero\n\n"
+                                "            original PS Vita version by mmozeiko");
         }
 
         if (input->active & PKGI_BUTTON_L2)
@@ -399,7 +401,7 @@ static void pkgi_do_main(pkgi_input* input)
 
         if (item->presence == PresenceUnknown)
         {
-            item->presence = pkgi_is_incomplete(titleid) ? PresenceIncomplete : pkgi_is_installed(titleid) ? PresenceInstalled : PresenceMissing;
+            item->presence = pkgi_is_incomplete(item->content) ? PresenceIncomplete : pkgi_is_installed(item->content) ? PresenceInstalled : PresenceMissing;
         }
 
         char size_str[64];
@@ -408,10 +410,16 @@ static void pkgi_do_main(pkgi_input* input)
 
         pkgi_clip_set(0, y, VITA_WIDTH, line_height);
         pkgi_draw_text(col_titleid, y, color, titleid);
-        const char* ct;
-        ct = content_type_str2(item->type);
-        pkgi_draw_text(col_content, y, color, ct);
-
+        const char* region;
+        switch (pkgi_get_region(item->content))
+        {
+        case RegionASA: region = "ASA"; break;
+        case RegionEUR: region = "EUR"; break;
+        case RegionJPN: region = "JPN"; break;
+        case RegionUSA: region = "USA"; break;
+        default: region = "???"; break;
+        }
+        pkgi_draw_text(col_region, y, color, region);
         if (item->presence == PresenceIncomplete)
         {
             pkgi_draw_text(col_installed, y, color, PKGI_UTF8_PARTIAL);
@@ -444,7 +452,7 @@ static void pkgi_do_main(pkgi_input* input)
 
     if (db_count == 0)
     {
-        const char* text = "Список пуст!";
+        const char* text = _("No items!");
 
         int w = pkgi_text_width(text);
         pkgi_draw_text((VITA_WIDTH - w) / 2, VITA_HEIGHT / 2, PKGI_COLOR_TEXT, text);
@@ -464,22 +472,26 @@ static void pkgi_do_main(pkgi_input* input)
         }
     }
 
-    if (input && (input->pressed & pkgi_ok_button()))
+    if (input && (input->pressed & pkgi_ok_button()) && db_count)
     {
         input->pressed &= ~pkgi_ok_button();
 
         DbItem* item = pkgi_db_get(selected_item);
 
-        if ((item->presence == PresenceInstalled) && pkgi_msg_dialog(MDIALOG_YESNO, MINST))
+        if (!pkgi_check_free_space(item->size))
         {
-            LOG("[%.9s] %s - уже установлено", item->content + 7, item->name);
-            item->presence = PresenceMissing;
+            LOG("[%.9s] %s - no free space", item->content + 7, item->name);
+            pkgi_dialog_error(_("Not enough free space on HDD"));
         }
-
-        if (item->presence == PresenceIncomplete || (item->presence == PresenceMissing && pkgi_check_free_space(item->size)))
+        else if (item->presence == PresenceInstalled)
         {
-            LOG("[%.9s] %s - начало установки", item->content + 7, item->name);
-            pkgi_dialog_start_progress("Скачивание...", "Подготовка...", 0);
+            LOG("[%.9s] %s - already installed", item->content + 7, item->name);
+            pkgi_dialog_ok_cancel(item->name, _("Item already installed, download again?"), &cb_dialog_download);
+        }
+        else if (item->presence == PresenceIncomplete || (item->presence == PresenceMissing))
+        {
+            LOG("[%.9s] %s - starting to install", item->content + 7, item->name);
+            pkgi_dialog_start_progress(_("РЎРєР°С‡РёРІР°РЅРёРµ..."), _("РџРѕРґРіРѕС‚РѕРІРєР°..."), 0);
             pkgi_start_thread("download_thread", &pkgi_download_thread);
         }
     }
@@ -491,32 +503,14 @@ static void pkgi_do_main(pkgi_input* input)
 
         pkgi_menu_start(search_active, &config);
     }
-    else if (input && (input->active & PKGI_BUTTON_S))
+    else if (input && (input->active & PKGI_BUTTON_S) && db_count)
     {
         input->pressed &= ~PKGI_BUTTON_S;
 
         DbItem* item = pkgi_db_get(selected_item);
-        char item_info[256];
-
-        const char* region;
-        switch (pkgi_get_region(item->content))
-        {
-        case RegionASA: region = "ASA"; break;
-        case RegionEUR: region = "EUR"; break;
-        case RegionJPN: region = "JPN"; break;
-        case RegionUSA: region = "USA"; break;
-        default: region = "???"; break;
-        }
-
-        pkgi_snprintf(item_info, sizeof(item_info), "ID: %s\nRAP: (%s)       SHA-256: (%s)\nРегион: %s    Контент: %s", 
-            item->content,
-            (item->rap ? PKGI_UTF8_CHECK_ON : PKGI_UTF8_CHECK_OFF),
-            (item->digest ? PKGI_UTF8_CHECK_ON : PKGI_UTF8_CHECK_OFF),
-            region,
-            content_type_str(item->type));
 
         pkgi_download_icon(item->content);
-        pkgi_dialog_details(item->name, item_info, item->description);
+        pkgi_dialog_details(item, content_type_str(item->type));
     }
 }
 
@@ -530,11 +524,11 @@ static void pkgi_do_refresh(void)
 
     if (total == 0)
     {
-        pkgi_snprintf(text, sizeof(text), "Обновление... %.2f КБ", (uint32_t)updated / 1024.f);
+        pkgi_snprintf(text, sizeof(text), "%s... %.2f %s", _("Refreshing"), (uint32_t)updated / 1024.f, _("KB"));
     }
     else
     {
-        pkgi_snprintf(text, sizeof(text), "Обновление... %u%%", updated * 100U / total);
+        pkgi_snprintf(text, sizeof(text), "%s... %u%%", _("Refreshing"), updated * 100U / total);
     }
 
     int w = pkgi_text_width(text);
@@ -544,7 +538,7 @@ static void pkgi_do_refresh(void)
 static void pkgi_do_head(void)
 {
     char title[256];
-    pkgi_snprintf(title, sizeof(title), "v%s", PKGI_VERSION);
+    pkgi_snprintf(title, sizeof(title), "v%s :: %s", PKGI_VERSION, content_type_str(config.content));
     pkgi_draw_text(0, 0, PKGI_COLOR_TEXT_HEAD, title);
 
     pkgi_draw_fill_rect(0, font_height, VITA_WIDTH, PKGI_MAIN_HLINE_HEIGHT, PKGI_COLOR_HLINE);
@@ -571,7 +565,7 @@ static void pkgi_do_head(void)
         int left = pkgi_text_width(search_text) + PKGI_MAIN_TEXT_PADDING;
         int right = rightw + PKGI_MAIN_TEXT_PADDING;
 
-        pkgi_snprintf(text, sizeof(text), "Поиск: %s", search_text);
+        pkgi_snprintf(text, sizeof(text), ": %s", search_text);
 
         pkgi_clip_set(left, 0, VITA_WIDTH - right - left, font_height + PKGI_MAIN_HLINE_EXTRA);
         pkgi_draw_text((VITA_WIDTH - pkgi_text_width(text)) / 2, 0, PKGI_COLOR_TEXT_TAIL, text);
@@ -579,7 +573,7 @@ static void pkgi_do_head(void)
     }
 }
 
-static void pkgi_do_tail(void)
+static void pkgi_do_tail(const char* atxt, uint32_t acolor)
 {
     pkgi_draw_fill_rect_z(0, bottom_y - font_height/2, PKGI_FONT_Z, VITA_WIDTH, PKGI_MAIN_HLINE_HEIGHT, PKGI_COLOR_HLINE);
 
@@ -589,33 +583,34 @@ static void pkgi_do_tail(void)
     char text[256];
     if (count == total)
     {
-        pkgi_snprintf(text, sizeof(text), "Итого: %u", count);
+        pkgi_snprintf(text, sizeof(text), "%s: %u", _("Count"), count);
     }
     else
     {
-        pkgi_snprintf(text, sizeof(text), "Итого: %u (%u)", count, total);
+        pkgi_snprintf(text, sizeof(text), "%s: %u (%u)", _("Count"), count, total);
     }
     pkgi_draw_text(0, bottom_y, PKGI_COLOR_TEXT_TAIL, text);
+	pkgi_draw_text(0, bottom_y+18, acolor, atxt);
 
     char size[64];
     pkgi_friendly_size(size, sizeof(size), pkgi_get_free_space());
 
     char free_str[64];
-    pkgi_snprintf(free_str, sizeof(free_str), "Свободно: %s", size);
+    pkgi_snprintf(free_str, sizeof(free_str), "%s: %s", _("Free"), size);
 
     int rightw = pkgi_text_width(free_str);
-    pkgi_draw_text(VITA_WIDTH - PKGI_MAIN_HLINE_EXTRA - rightw, bottom_y, PKGI_COLOR_TEXT_TAIL, free_str);
+    pkgi_draw_text(VITA_WIDTH - PKGI_MAIN_HLINE_EXTRA - rightw, bottom_y, PKGI_COLOR_TEXT_TAIL, free_str);	
 
     int left = pkgi_text_width(text) + PKGI_MAIN_TEXT_PADDING;
     int right = rightw + PKGI_MAIN_TEXT_PADDING;
 
     if (pkgi_menu_is_open())
     {
-        pkgi_snprintf(text, sizeof(text), "%s Выбор  " PKGI_UTF8_T " Применить  %s Отмена", pkgi_get_ok_str(), pkgi_get_cancel_str());
+        pkgi_snprintf(text, sizeof(text), "%s %s  " PKGI_UTF8_T " %s  %s %s", pkgi_get_ok_str(), _("Select"), _("Close"), pkgi_get_cancel_str(), _("Cancel"));
     }
     else
     {
-        pkgi_snprintf(text, sizeof(text), "%s Скачать  " PKGI_UTF8_T " Меню  " PKGI_UTF8_S " Детали  %s Выход", pkgi_get_ok_str(), pkgi_get_cancel_str());
+        pkgi_snprintf(text, sizeof(text), "%s %s  " PKGI_UTF8_T " %s  " PKGI_UTF8_S " %s  %s %s", pkgi_get_ok_str(), _("Download"), _("Menu"), _("Details"), pkgi_get_cancel_str(), _("Exit"));
     }
 
     pkgi_clip_set(left, bottom_y, VITA_WIDTH - right - left, VITA_HEIGHT - bottom_y);
@@ -650,106 +645,74 @@ static void reposition(void)
     }
 }
 
+const char * json_parse(json_object * jobj, const char* search)
+{
+    json_object *val;
+    if (json_object_object_get_ex(jobj, search, &val) && (json_object_get_type(val) == json_type_string))
+        return (json_object_get_string(val));
+
+    return NULL;
+}
+
 static void pkgi_update_check_thread(void)
 {
-    LOG("Проверка обновления PKGi на %s", PKGI_UPDATE_URL);
+    const char *value;
+    char *buffer;
+    uint32_t size;
+		
+    LOG("checking latest pkgi version at %s", PKGI_UPDATE_URL);
+	
+    buffer = pkgi_http_download_buffer(PKGI_UPDATE_URL, &size);
 
-    pkgi_http* http = pkgi_http_get(PKGI_UPDATE_URL, NULL, 0);
-    if (!http)
+    if (!buffer)
     {
-        LOG("HTTP-запрос к %s не удался", PKGI_UPDATE_URL);
+        LOG("no update data available");
         pkgi_thread_exit();
     }
 
-    int64_t sz;
-    pkgi_http_response_length(http, &sz);
+    json_object * jobj = json_tokener_parse(buffer);
 
-    char buffer[8192];
-    uint32_t size = 0;
-
-    while (size < sizeof(buffer) - 1)
+    if ((value = json_parse(jobj, "name")) == NULL || !pkgi_memequ("PKGi PS3 RUS MOD", value, 8) || pkgi_stricmp(PKGI_VERSION, value+18) == 0)
     {
-        int read = pkgi_http_read(http, buffer + size, sizeof(buffer) - 1 - size);
-        if (read < 0)
-        {
-            size = 0;
-            break;
-        }
-        else if (read == 0)
-        {
-            break;
-        }
-        size += read;
-    }
-
-    if (size != 0)
-    {
-        LOG("Получено %u байт", size);
-    }
-    buffer[size] = 0;
-
-    pkgi_http_close(http);
-
-    static const char find[] = "\"name\":\"PKGi PS3 RUS MOD v";
-    const char* start = pkgi_strstr(buffer, find);
-    if (!start)
-    {
-        LOG("Имя не найдено");
+        LOG("no new version available");
         pkgi_thread_exit();
     }
 
-    LOG("Имя найдено");
-    start += sizeof(find) - 1;
+    LOG("latest version is %s", value+9);
 
-    char* end = pkgi_strstr(start, "\"");
-    if (!end)
+    value = json_parse(json_object_array_get_idx(json_object_object_get(jobj, "assets"), 0), "browser_download_url");
+    if (!value)
     {
-        LOG("Не найдено конца имени");
+        LOG("no download URL found");
         pkgi_thread_exit();
     }
 
-    *end = 0;
-    LOG("Последняя версия %s", start);
-
-    if (pkgi_stricmp(PKGI_VERSION, start) == 0)
-    {
-        LOG("Обновление не обнаружено");
-        pkgi_thread_exit();
-    }
-
-	start = pkgi_strstr(end+1, "\"browser_download_url\":\"");
-	if (!start)
-	{
-		LOG("URL для загрузки не найден");
-        pkgi_thread_exit();
-	}
-
-	start += 24;
-	end = pkgi_strstr(start, "\"");
-	if (!end)
-	{
-		LOG("URL для загрузки не найден");
-        pkgi_thread_exit();
-	}
-
-	*end = 0;
-	LOG("URL загрузки %s", start);
+	LOG("download URL is %s", value);
 
     DbItem update_item = {
         .content = "UP0001-NP00PKGI3_00-0000000000000000",
         .name    = "PKGi PS3 RUS MOD Update",
-        .url     = start,
+        .url     = value,
     };
 
-    pkgi_dialog_start_progress(update_item.name, "Подготовка...", 0);
+    pkgi_dialog_start_progress(update_item.name, _("РџРѕРґРіРѕС‚РѕРІРєР°..."), 0);	
     
     if (pkgi_download(&update_item, 0) && install(update_item.content))
     {
-        pkgi_dialog_message(update_item.name, "Успешно скачано обновление PKGi PS3 RUS MOD");
-        LOG("Обновление скачано!");
+        pkgi_dialog_message(update_item.name, _("Successfully downloaded PKGi PS3 RUS MOD update"));		
+        LOG("update downloaded!");
     }
 
     pkgi_thread_exit();
+}
+
+void pkgi_load_language(const char* lang)
+{
+    char path[256];
+
+    pkgi_snprintf(path, sizeof(path), PKGI_APP_FOLDER "/LANG/%s.po", lang);
+    LOG("Loading language file (%s)...", path);
+    mini18n_set_locale(path);
 }
 
 int main(int argc, const char* argv[])
@@ -762,6 +725,7 @@ int main(int argc, const char* argv[])
         pkgi_start_music();
     }
     
+    pkgi_load_language(config.language);
     pkgi_dialog_init();
     
     font_height = pkgi_text_height("M");
@@ -772,12 +736,25 @@ int main(int argc, const char* argv[])
     pkgi_start_thread("refresh_thread", &pkgi_refresh_thread);
 
     pkgi_texture background = pkgi_load_image_buffer(background, png);
+	char atxt[35];
+	int chk;
+	uint32_t acolor;
+	if (chk_act_dat()==0) {	
+		pkgi_snprintf(atxt, sizeof(atxt), _("The system is not activated!"));		
+		chk=0;
+		acolor=PKGI_COLOR_TEXT_ERROR;
+	} else 
+	{	
+		pkgi_snprintf(atxt, sizeof(atxt), _("Active user: %d"), chk_act_dat());
+		chk=1;
+		acolor=PKGI_COLOR_TEXT_DIALOG;
+	}	
 
     if (config.version_check)
-    {
-        pkgi_start_thread("update_thread", &pkgi_update_check_thread);
+    {	       
+		pkgi_start_thread("update_thread", &pkgi_update_check_thread);		
     }
-
+		
     pkgi_input input = {0, 0, 0, 0};
     while (pkgi_update(&input) && (state != StateTerminate))
     {
@@ -788,13 +765,13 @@ int main(int argc, const char* argv[])
             pkgi_db_configure(NULL, &config);
             state = StateMain;
         }
-
         pkgi_do_head();
+				
         switch (state)
         {
         case StateError:
             pkgi_do_error();
-            // оставьте меню открытым, если базы данных нет, а URL-адреса доступны
+            // leave the menu open if there's no database and we have URLs available
             if (!pkgi_menu_is_open() && config.allow_refresh)
             {
                 config_temp = config;
@@ -811,15 +788,20 @@ int main(int argc, const char* argv[])
             break;
 
         default:
-            // никогда не бывает, просто чтобы заткнуть компилятор
+            // never happens, just to shut up the compiler
             break;
         }
 
-        pkgi_do_tail();
-
+        pkgi_do_tail(atxt,acolor);
+				
         if (pkgi_dialog_is_open())
         {
             pkgi_do_dialog(&input);
+
+            if (pkgi_dialog_is_cancelled())
+            {
+                pkgi_dialog_close();
+            }
         }
 
         if (pkgi_dialog_input_update())
@@ -827,15 +809,24 @@ int main(int argc, const char* argv[])
             search_active = 1;
             pkgi_dialog_input_get_text(search_text, sizeof(search_text));
             pkgi_db_configure(search_text, &config);
-            reposition();
+            reposition();			
         }
+		
+		if (chk==0)
+		{
+		 char etxt[150];
+		 DbItem* item = pkgi_db_get(selected_item);		 
+		 pkgi_snprintf(etxt, sizeof(etxt), "%s\n%s\n%s", _("Act.dat not found, activate the console according"),_("to the instructions in the topic [FAQ] Game formats"),_("[install, mount, transfer, delete]"));	
+         pkgi_dialog_qr(item, etxt);		 
+		 chk=1;
+		}
 
         if (pkgi_menu_is_open())
         {
             if (pkgi_do_menu(&input))
             {
                 Config new_config;
-                pkgi_menu_get(&new_config);
+                pkgi_menu_get(&new_config);				
                 if (config_temp.sort != new_config.sort ||
                     config_temp.order != new_config.order ||
                     config_temp.filter != new_config.filter)
@@ -855,7 +846,7 @@ int main(int argc, const char* argv[])
                 MenuResult mres = pkgi_menu_result();
                 if (mres == MenuResultSearch)
                 {
-                    pkgi_dialog_input_text("Search", search_text);
+                    pkgi_dialog_input_text(_("Search"), search_text);
                 }
                 else if (mres == MenuResultSearchClear)
                 {
@@ -886,12 +877,11 @@ int main(int argc, const char* argv[])
                     pkgi_start_thread("refresh_thread", &pkgi_refresh_thread);
                 }
             }
-        }
-
-        pkgi_swap();
-    }
-
-    LOG("Завершено");
+        }		
+        pkgi_swap();		
+    }	
+    LOG("finished");
+    mini18n_close();
     pkgi_free_texture(background);
     pkgi_end();
 	return 0;
