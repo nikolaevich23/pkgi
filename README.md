@@ -7,7 +7,7 @@
 
 Хоумбрю приложение `pkgi-ps3` позволяет загружать и устанавливать файлы `.pkg` прямо на вашу PS3.
 
-![image](https://i1.imageban.ru/out/2022/01/26/80fde7eb02403f724cb8d305d683d2e9.jpg)
+![image](https://i3.imageban.ru/out/2022/10/29/d2ebf512315935e7826e394672b83df6.jpg)
 
 **Комментарии, идеи, предложения?** Вы можете отписаться [мне](https://github.com/ErikPshat/) всегда в теме [на форуме](https://www.pspx.ru/forum/showthread.php?t=110158).
 
@@ -46,13 +46,12 @@
 - `pkgi_demos.txt`
 - `pkgi_dlcs.txt`
 - `pkgi_games.txt`
-- `pkgi_managers.txt`
 - `pkgi_minis.txt`
 - `pkgi_ps1.txt`
 - `pkgi_ps2.txt`
 - `pkgi_russian.txt`
 - `pkgi_themes.txt`
-- `pkgi_updates.txt`
+- `pkgi_tunings.txt`
 
 Элементы каждого из этих файлов будут автоматически классифицированы по типу содержимого файла. **Примечание:** Приложение предполагает, что каждый файл базы данных имеет один и тот же формат, как определено в `dbformat.txt`.
 
@@ -64,13 +63,13 @@
 
 ```
 url http://www.mysite.com/mylist.csv
-url_managers http://www.myapp.com/managers.csv
+url_tunings http://www.myapp.com/tunings.csv
 url_emulators http://www.example.com/emulators.csv
 ```
 
 При настройках в данном примере выше:
 * `pkgi.txt` будет обновлён из `mylist.csv`
-* `pkgi_managers.txt` будет обновлён из `managers.csv`
+* `pkgi_tunings.txt` будет обновлён из `tunings.csv`
 * `pkgi_emulators.txt` будет обновлён из `emulators.csv`
 
 Когда вы откроете приложение в следующий раз, у вас будет дополнительный пункт меню ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png) под названием **Обновить**. Когда вы выберете его, локальные базы данных будут синхронизированы с определенными URL-адресами.
