@@ -7,7 +7,7 @@
 
 Хоумбрю приложение `pkgi-ps3` позволяет загружать и устанавливать файлы `.pkg` прямо на вашу PS3.
 
-![image](https://i3.imageban.ru/out/2022/08/05/c051d8c018127d014e3d4e0e89cf01a4.png)
+![image](https://i1.imageban.ru/out/2022/01/26/80fde7eb02403f724cb8d305d683d2e9.jpg)
 
 **Комментарии, идеи, предложения?** Вы можете отписаться [мне](https://github.com/ErikPshat/) всегда в теме [на форуме](https://www.pspx.ru/forum/showthread.php?t=110158).
 
