@@ -37,6 +37,7 @@ for /f "tokens=* delims=" %%E in (SHA256.txt) do (
 	set hash=%%E
 	if !ng!==2 set SHA256=!hash: =!
 )
+if defined hshg (
 if "!SHA256!"=="!hshg!" (
 	echo Контрольная сумма SHA256 совпадает: !SHA256!|!col! 0B
 	echo Размер скачанного PKG соответсвует: !size! байт|!col! 0B
@@ -49,6 +50,15 @@ if "!SHA256!"=="!hshg!" (
 	echo !hshg!
 	pause & exit
 )
-del /q "SHA256.txt"
+)
+if not defined hshg (
+	echo PSN не возвратил контрольную сумму SHA256 файла - проверка SHA256 отменена, имейте в виду:|!col! 0C
+	echo Контрольная сумма SHA256: !SHA256!|!col! 0B
+	echo Размер скачанного PKG   : !size! байт|!col! 0B
+	echo.
+	echo Готово^^! PKG игры скачан успешно !TIME:~0,2!:!TIME:~3,2!:!TIME:~6,2!|!col! 0A
+	echo PKG игры НЕ проверен на битость по контрольной сумме.|!col! 0C
+)
+if exist "SHA256.txt" del /q "SHA256.txt"
 echo.
 pause
